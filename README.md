@@ -1,8 +1,19 @@
 # QSL
 ## What to do
-The program main.f90 is the main program.
+The file main.f90 is the main program.
+
+The file mod_io.f90 contains all the routines used for read and write.
+
+The file mod_param.f90 contains definition of all the global parameters.
+
+The file mod_operator.f90 contains all the small parts of some calculation like, rk4, cross product ...
+
+The file mod_solver.f90 contains the main pathway for the calculation.
+
 This program is used for calculating the squashing factor Q.
+
 The old method is proposed by Pariat & Demoulin 2012, which is not used anymore.
+
 For the latest version, the method is that proposed in Scott 2017 ApJ and Tassev and Savcheva 2017 ApJ.
 
 ## History:
