@@ -1,0 +1,18 @@
+&filename_par
+	BfieldName = 'bxyz.binary'
+	OutFileName = 'qvalue.binary'
+/
+&cal_par
+	nthreads = 1
+	dimx = 50
+	dimy = 50
+	dimz = 50
+	x_start = 1
+	y_start = 25
+	z_start = 1
+	x_end = 50
+	y_end = 25
+	z_end = 50
+	nlevel = 10
+	delta_s = 0.25
+/
