@@ -44,7 +44,7 @@ For the latest version, the method is that proposed in Scott 2017 ApJ and Tassev
 2, create a 3d magnetic field, e.g., in test1, run bxyz.pro in IDL
 ```
 > IDL
-> .r bxyz.pro
+IDL> .r bxyz.pro
 ```
 
 3, make a soft link of the program at the target directory, like ./test1
