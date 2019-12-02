@@ -17,21 +17,21 @@ The old method is proposed by Pariat & Demoulin 2012, which is not used anymore.
 For the latest version, the method is that proposed in Scott 2017 ApJ and Tassev and Savcheva 2017 ApJ.
 
 ## History:
-v1 K.Y. 2016@NJU
+-v1 K.Y. 2016@NJU
 
-v2 K.Y. Jun/2017@MSU change the compiler from ifort to gfortran.
+-v2 K.Y. Jun/2017@MSU change the compiler from ifort to gfortran.
 
    K.Y. Mar/2017@MSU change the reading file from the initial formatted to unformatted.
    
-v3 K.Y. Jun/2018@NJU change the most of names of the subroutines to make it look better.
+-v3 K.Y. Jun/2018@NJU change the most of names of the subroutines to make it look better.
 
-v4 K.Y. Oct/2018@NJU use Scott's method in ApJ 2017
+-v4 K.Y. Oct/2018@NJU use Scott's method in ApJ 2017
 
    K.Y. Nov/2018@NJU add the namelist format for reading the parameters.
    
-v7 K.Y. May/2019@SIFA use SDF lib for io, only used in this version.
+-v7 K.Y. May/2019@SIFA use SDF lib for io, only used in this version.
 
-v8 K.Y. Oct/2019@SIFA collect all the files in mod format.
+-v8 K.Y. Oct/2019@SIFA collect all the files in mod format.
 
    K.Y. NOv/2019@SIFA correct the version in spherical coordinate system.
 
