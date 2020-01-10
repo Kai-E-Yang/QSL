@@ -2,11 +2,11 @@
 ## What to do
 The file main.f90 is the main program.
 
-The file mod_io.f90 contains all the routines used for read and write.
+The file mod_io.f90 contains all the routines used for reading and writing.
 
-The file mod_param.f90 contains definition of all the global parameters.
+The file mod_param.f90 contains all the definitions of global parameters.
 
-The file mod_operator.f90 contains all the small parts of some calculation like, rk4, cross product ...
+The file mod_operator.f90 contains all the small parts of some calculations, like rk4, cross product ...
 
 The file mod_solver.f90 contains the main pathway for the calculation.
 
