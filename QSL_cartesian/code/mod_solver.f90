@@ -20,7 +20,7 @@ contains
     call OMP_SET_NUM_THREADS(nthreads)
     allocate(mark(0:(nthreads-1)))
     
-    mark = 0.0d0
+    mark = 0
     sum0 = 0
     do k=1,5
        flag(k) = floor(0.2*k*refine_dimx)
