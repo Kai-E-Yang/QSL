@@ -1,5 +1,5 @@
 FC   = gfortran
-Flag = -fopenmp -ffree-form -ffree-line-length-none -O3 -Wall -fcheck=bounds
+Flag = -fopenmp -ffree-form -ffree-line-length-none -O3 -fcheck=bounds
 
 files = mod_param.f90 mod_operator.f90 mod_io.f90 mod_solver.f90 main.f90
 
