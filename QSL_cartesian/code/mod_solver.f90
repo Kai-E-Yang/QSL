@@ -29,6 +29,82 @@ contains
     write(*,'(A)')'| Start the computation !'
     call date_and_time(VALUES=time_begin)
 
+    if (refine_dimz.eq.1) then
+!$omp parallel private(TID, sum0, k)
+!$omp do schedule(dynamic,1)
+
+    do k=1,refine_dimx
+       call cal_plane_z(k)
+       TID = OMP_GET_THREAD_NUM()
+       mark(TID) = mark(TID) + 1
+       sum0 = sum(mark)
+       if(sum0 .eq. flag(1) .or. sum0 .eq. flag(2) .or. sum0 &
+         & .eq. flag(3) .or. sum0 .eq. flag(4) .or. sum0 .eq.  &
+         & flag(5)) then
+         call date_and_time(VALUES=time_end)
+         time_delta = 1.0d0*(time_end - time_begin)
+         write(*,'(A,f6.1,A,A,f8.2)')'| Calculation progress: '&
+         & ,100.*sum(mark)/(refine_dimx*1.0),'%','; costs time (min): '&
+         & ,(time_delta(7)/3600.0 + time_delta(6)/60. &
+         & + time_delta(5) + time_delta(3)*24.0)*60
+       end if
+    
+    end do
+!$omp end do
+!$omp end parallel
+    end if
+
+    if (refine_dimy.eq.1) then
+!$omp parallel private(TID, sum0, k)
+!$omp do schedule(dynamic,1)
+
+    do k=1,refine_dimx
+       call cal_plane_y(k)
+       TID = OMP_GET_THREAD_NUM()
+       mark(TID) = mark(TID) + 1
+       sum0 = sum(mark)
+       if(sum0 .eq. flag(1) .or. sum0 .eq. flag(2) .or. sum0 &
+         & .eq. flag(3) .or. sum0 .eq. flag(4) .or. sum0 .eq.  &
+         & flag(5)) then
+         call date_and_time(VALUES=time_end)
+         time_delta = 1.0d0*(time_end - time_begin)
+         write(*,'(A,f6.1,A,A,f8.2)')'| Calculation progress: '&
+         & ,100.*sum(mark)/(refine_dimx*1.0),'%','; costs time (min): '&
+         & ,(time_delta(7)/3600.0 + time_delta(6)/60. &
+         & + time_delta(5) + time_delta(3)*24.0)*60
+       end if
+    
+    end do
+!$omp end do
+!$omp end parallel
+    end if
+
+    if (refine_dimx.eq.1) then
+!$omp parallel private(TID, sum0, k)
+!$omp do schedule(dynamic,1)
+
+    do k=1,refine_dimy
+       call cal_plane_x(k)
+       TID = OMP_GET_THREAD_NUM()
+       mark(TID) = mark(TID) + 1
+       sum0 = sum(mark)
+       if(sum0 .eq. flag(1) .or. sum0 .eq. flag(2) .or. sum0 &
+         & .eq. flag(3) .or. sum0 .eq. flag(4) .or. sum0 .eq.  &
+         & flag(5)) then
+         call date_and_time(VALUES=time_end)
+         time_delta = 1.0d0*(time_end - time_begin)
+         write(*,'(A,f6.1,A,A,f8.2)')'| Calculation progress: '&
+         & ,100.*sum(mark)/(refine_dimy*1.0),'%','; costs time (min): '&
+         & ,(time_delta(7)/3600.0 + time_delta(6)/60. &
+         & + time_delta(5) + time_delta(3)*24.0)*60
+       end if
+    
+    end do
+!$omp end do
+!$omp end parallel
+    end if
+
+    if(refine_dimx.ne.1 .and. refine_dimy.ne.1 .and. refine_dimz.ne.1) then
 !$omp parallel private(TID, sum0, k)
 !$omp do schedule(dynamic,1)
 
@@ -51,7 +127,7 @@ contains
     end do
 !$omp end do
 !$omp end parallel
-    
+    end if
     call date_and_time(VALUES=time_end)
     write(*,'(A)')'| Computation finished !'
   end subroutine do_cal
@@ -79,6 +155,72 @@ contains
     cal_data(k,:,:,2) = length_slice
     cal_data(k,:,:,3) = end_slice
   end subroutine cal_plane
+! ------- do parallel cal on z layer ------
+  subroutine cal_plane_x(k)
+    integer,intent(in)::k
+    integer::i,j
+    real(kind=r8) :: q_slice(refine_dimy)
+    real(kind=r8) :: end_slice(refine_dimy)
+    real(kind=r8) :: length_slice(refine_dimy)
+    
+    real(kind=r8) :: xindex,yindex,zindex
+    
+    yindex = y_start+(k-1)/real(nlevel,kind=r8)
+    xindex = x_start
+
+    do i=1,refine_dimz
+       zindex = z_start+(i-1)/real(nlevel,kind=r8)
+      call cal_point(xindex,yindex,zindex,q_slice(i),&
+            &end_slice(i),length_slice(i))
+    end do
+    cal_data(1,k,:,1) = q_slice
+    cal_data(1,k,:,2) = length_slice
+    cal_data(1,k,:,3) = end_slice
+  end subroutine cal_plane_x
+! ------- do parallel cal on z layer ------
+  subroutine cal_plane_y(k)
+    integer,intent(in)::k
+    integer::i,j
+    real(kind=r8) :: q_slice(refine_dimy)
+    real(kind=r8) :: end_slice(refine_dimy)
+    real(kind=r8) :: length_slice(refine_dimy)
+    
+    real(kind=r8) :: xindex,yindex,zindex
+    
+    xindex = x_start+(k-1)/real(nlevel,kind=r8)
+    yindex = y_start
+
+    do i=1,refine_dimz
+       zindex = z_start+(i-1)/real(nlevel,kind=r8)
+      call cal_point(xindex,yindex,zindex,q_slice(i),&
+            &end_slice(i),length_slice(i))
+    end do
+    cal_data(k,1,:,1) = q_slice
+    cal_data(k,1,:,2) = length_slice
+    cal_data(k,1,:,3) = end_slice
+  end subroutine cal_plane_y
+! ------- do parallel cal on z layer ------
+  subroutine cal_plane_z(k)
+    integer,intent(in)::k
+    integer::i,j
+    real(kind=r8) :: q_slice(refine_dimy)
+    real(kind=r8) :: end_slice(refine_dimy)
+    real(kind=r8) :: length_slice(refine_dimy)
+    
+    real(kind=r8) :: xindex,yindex,zindex
+    
+    xindex = x_start+(k-1)/real(nlevel,kind=r8)
+    zindex = z_start
+
+    do i=1,refine_dimy
+       yindex = y_start+(i-1)/real(nlevel,kind=r8)
+      call cal_point(xindex,yindex,zindex,q_slice(i),&
+            &end_slice(i),length_slice(i))
+    end do
+    cal_data(k,:,1,1) = q_slice
+    cal_data(k,:,1,2) = length_slice
+    cal_data(k,:,1,3) = end_slice
+  end subroutine cal_plane_z
 ! ------ do calculation at each point ------
   subroutine cal_point(PosiX,PosiY,PosiZ,SquashingQ,end_mark,length)
     real(kind=r8),intent(in) :: PosiX
