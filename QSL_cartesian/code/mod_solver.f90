@@ -159,9 +159,9 @@ contains
   subroutine cal_plane_x(k)
     integer,intent(in)::k
     integer::i,j
-    real(kind=r8) :: q_slice(refine_dimy)
-    real(kind=r8) :: end_slice(refine_dimy)
-    real(kind=r8) :: length_slice(refine_dimy)
+    real(kind=r8) :: q_slice(refine_dimz)
+    real(kind=r8) :: end_slice(refine_dimz)
+    real(kind=r8) :: length_slice(refine_dimz)
     
     real(kind=r8) :: xindex,yindex,zindex
     
@@ -181,9 +181,9 @@ contains
   subroutine cal_plane_y(k)
     integer,intent(in)::k
     integer::i,j
-    real(kind=r8) :: q_slice(refine_dimy)
-    real(kind=r8) :: end_slice(refine_dimy)
-    real(kind=r8) :: length_slice(refine_dimy)
+    real(kind=r8) :: q_slice(refine_dimz)
+    real(kind=r8) :: end_slice(refine_dimz)
+    real(kind=r8) :: length_slice(refine_dimz)
     
     real(kind=r8) :: xindex,yindex,zindex
     
