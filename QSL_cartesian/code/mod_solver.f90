@@ -22,14 +22,16 @@ contains
     
     mark = 0
     sum0 = 0
-    do k=1,5
-       flag(k) = floor(0.2*k*refine_dimx)
-    end do
     
     write(*,'(A)')'| Start the computation !'
     call date_and_time(VALUES=time_begin)
 
     if (refine_dimz.eq.1) then
+
+      do k=1,5
+         flag(k) = floor(0.2*k*refine_dimx)
+      end do
+
 !$omp parallel private(TID, sum0, k)
 !$omp do schedule(dynamic,1)
 
@@ -55,6 +57,11 @@ contains
     end if
 
     if (refine_dimy.eq.1) then
+
+      do k=1,5
+         flag(k) = floor(0.2*k*refine_dimx)
+      end do
+
 !$omp parallel private(TID, sum0, k)
 !$omp do schedule(dynamic,1)
 
@@ -80,6 +87,11 @@ contains
     end if
 
     if (refine_dimx.eq.1) then
+
+      do k=1,5
+         flag(k) = floor(0.2*k*refine_dimy)
+      end do
+
 !$omp parallel private(TID, sum0, k)
 !$omp do schedule(dynamic,1)
 
@@ -105,6 +117,11 @@ contains
     end if
 
     if(refine_dimx.ne.1 .and. refine_dimy.ne.1 .and. refine_dimz.ne.1) then
+
+      do k=1,5
+         flag(k) = floor(0.2*k*refine_dimx)
+      end do
+      
 !$omp parallel private(TID, sum0, k)
 !$omp do schedule(dynamic,1)
 
