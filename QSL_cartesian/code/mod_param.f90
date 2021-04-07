@@ -19,7 +19,7 @@ implicit none
 
   real(kind=r8) :: delta_s
   real(kind=r8),dimension(:,:,:),allocatable :: Bx,By,Bz
-  real(kind=r8),dimension(:,:,:),allocatable :: x,y,z
+  real,dimension(:,:,:),allocatable :: x,y,z
 
   real(kind=r8),dimension(:,:,:,:),allocatable :: cal_data
 

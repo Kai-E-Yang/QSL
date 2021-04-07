@@ -101,26 +101,28 @@ contains
   subroutine read_blk()
     logical :: alive
     integer(kind=i4) :: i,j,k
-    integer(kind=i8) :: ntotal
     character*1024   :: header
-    double precision :: ttime
+    real :: ttime,B1,B2,B3
 
     inquire(file=BfieldName,exist=alive)
     if(alive) then 
       write(*,*)'OUTPUT_B: loading data and preparing input files for QSL3D'
       OPEN(UNIT=3,STATUS='OLD',ACTION='READ',FILE=BfieldName,POSITION='REWIND',FORM='UNFORMATTED')
       read(3) header
-      read(3) ntotal,dimx,dimy,dimz
+      read(3) dimx,dimy,dimz
       read(3) ttime
-      allocate(x(0:dimx+1,0:dimy+1,0:dimz+1))
-      allocate(y(0:dimx+1,0:dimy+1,0:dimz+1))
-      allocate(z(0:dimx+1,0:dimy+1,0:dimz+1))
+      allocate(x(dimx,dimy,dimz))
+      allocate(y(dimx,dimy,dimz))
+      allocate(z(dimx,dimy,dimz))
       do k=1,dimz
-      do j=1,dimy
-      do i=1,dimx
-         read(3) x(i,j,k),y(i,j,k),z(i,j,k),Bx(i,j,k),By(i,j,k),Bz(i,j,k)
-      end do
-      end do
+        do j=1,dimy
+          do i=1,dimx
+             read(3) x(i,j,k),y(i,j,k),z(i,j,k),B1,B2,B3
+             Bx(i,j,k)=dble(B1)
+             By(i,j,k)=dble(B2)
+             Bz(i,j,k)=dble(B3)
+          end do
+        end do
       end do 
       close(3)
     else
