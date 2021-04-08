@@ -35,6 +35,8 @@ For the latest version, the method is that proposed in Scott 2017 ApJ and Tassev
 
    K.Y. NOv/2019@SIFA correct the version in spherical coordinate system.
 
+- v9 C.X. Apr/2021@YNU add vtk format for output data.
+
 ## How to use it
 1, compile the program by using the makefile
 ```
@@ -70,6 +72,7 @@ The format of the par file is the namelist in fortran, e.g.,
 &filename_par
 	BfieldName = '*****.binary'  ! file name for the Bxyz companent 
 	OutFileName = '*****.binary' ! file name for the out put file
+        indataformat = 'binary' or 'blk' ! data format of the input file
 /
 &cal_par
 	nthreads = 1                 ! thread number used for parallel computation
@@ -82,7 +85,13 @@ The format of the par file is the namelist in fortran, e.g.,
 	x_end = 50                   ! end point in x (it starts from 1 to dim X)
 	y_end = 50                   ! end point in y (it starts from 1 to dim Y)
 	z_end = 1                    ! end point in z (it starts from 1 to dim Z)
-	nlevel = 10                  ! grid level
+        x_min = -10.0                ! minimal position in x coordinate
+        x_max =  10.0                ! maximal position in x coordinate
+        y_min = -20.0                ! minimal position in y coordinate
+        y_max =  20.0                ! maximal position in y coordinate
+        z_min =   0.0                ! minimal position in z coordinate
+        z_max =  12.0                ! maximal position in z coordinate
+	nlevel = 3                   ! grid level factor to amplifiy grid resolution 
 	delta_s = 0.25               ! integral step (the default value is 0.25)
 /
 ```

@@ -6,8 +6,8 @@ contains
   subroutine read_parameter()
     implicit none
     ! set default value    
-    BfieldName   = 'bfield.binary'
-    OutFileName  = 'result.binary'
+    BfieldName   = 'bfield'
+    OutFileName  = 'result'
     indataformat = 'binary'
 
     nthreads    = 1
@@ -22,7 +22,14 @@ contains
     x_end       = 100
     y_end       = 100
     z_end       = 100
-    
+
+    x_min       = 1.e37
+    x_max       = -1.e37
+    y_min       = 1.e37
+    y_max       = -1.e37
+    z_min       = 1.e37
+    z_max       = -1.e37
+
     nlevel      = 1
     delta_s     = 0.1d0
     ! read parameters   
@@ -55,9 +62,6 @@ contains
     implicit none  
     deallocate(Bx,By,Bz)
     deallocate(cal_data)
-    if(indataformat .eq. 'blk') then
-      deallocate(x,y,z)
-    end if
   end subroutine deallocate_var
 
   subroutine show_information()
@@ -102,7 +106,7 @@ contains
     logical :: alive
     integer(kind=i4) :: i,j,k
     character*1024   :: header
-    real :: ttime,B1,B2,B3
+    real :: ttime,x1,x2,x3,B1,B2,B3
 
     inquire(file=BfieldName,exist=alive)
     if(alive) then 
@@ -111,13 +115,16 @@ contains
       read(3) header
       read(3) dimx,dimy,dimz
       read(3) ttime
-      allocate(x(dimx,dimy,dimz))
-      allocate(y(dimx,dimy,dimz))
-      allocate(z(dimx,dimy,dimz))
       do k=1,dimz
         do j=1,dimy
           do i=1,dimx
-             read(3) x(i,j,k),y(i,j,k),z(i,j,k),B1,B2,B3
+             read(3) x1,x2,x3,B1,B2,B3
+             x_min=min(x1,x_min)
+             y_min=min(x2,y_min)
+             z_min=min(x3,z_min)
+             x_max=max(x1,x_max)
+             y_max=max(x2,y_max)
+             z_max=max(x3,z_max)
              Bx(i,j,k)=dble(B1)
              By(i,j,k)=dble(B2)
              Bz(i,j,k)=dble(B3)
@@ -125,6 +132,7 @@ contains
         end do
       end do 
       close(3)
+      write(*,'(A)')'| Data sucessfully loaded !'
     else
       write(*,'(A)')'| File '//BfieldName//' does not exist'
       stop
@@ -275,6 +283,78 @@ contains
     &Form = "unformatted" )
     write(4) cal_data
     close(4)
+    if(indataformat=='blk') call write_vtk()
   end subroutine write_data
+
+  subroutine write_vtk()
+    real :: dx1,dx2,dx3
+    integer :: qunit,n1,n2,n3,ix1,ix2,ix3,iw
+    integer(kind=i8) :: np
+    character(len=80) :: filename,wname(3)
+
+    qunit=10
+    n1=refine_dimx
+    n2=refine_dimy
+    n3=refine_dimz
+    np=n1*n2*n3
+    dx1=(x_max-x_min)*real(x_end-x_start+1)/real(dimx)/(n1-1)
+    dx2=(y_max-y_min)*real(y_end-y_start+1)/real(dimy)/(n2-1)
+    dx3=(z_max-z_min)*real(z_end-z_start+1)/real(dimz)/(n3-1)
+    allocate(x(refine_dimx))
+    allocate(y(refine_dimy))
+    allocate(z(refine_dimz))
+
+    do ix1=1,n1
+      x(ix1)=x_min+(ix1-1)*dx1+(x_max-x_min)*real(x_start-1)/real(dimx)
+    end do
+    do ix2=1,n2
+      y(ix2)=y_min+(ix2-1)*dx2+(y_max-y_min)*real(y_start-1)/real(dimy)
+    end do
+    do ix3=1,n3
+      z(ix3)=z_min+(ix3-1)*dx3+(z_max-z_min)*real(z_start-1)/real(dimz)
+    end do
+    wname(1)='Q_sqash'
+    wname(2)='L_Bline'
+    wname(3)='OC_mark'
+
+    write(*,'(a)')'| Writing vtk data ...'
+    write(filename,'(a,a)') TRIM(OutFileName),'.vtk'
+    open(qunit,file=filename,status='unknown')
+    write(qunit,'(a)')'# vtk DataFile Version 2.0'
+    write(qunit,'(a)')'Constructed solar data'
+    write(qunit,'(a)')'BINARY'
+    write(qunit,'(a)')'DATASET RECTILINEAR_GRID'
+    write(qunit,'(a,i7,i7,i7)')'DIMENSIONS ',n1,n2,n3
+    write(qunit,'(a,i7,a)')'X_COORDINATES ',n1,' float'
+    close(qunit)
+    open(qunit,file=filename,status='old',access='stream',position='append',convert='BIG_ENDIAN')
+    write(qunit) x
+    close(qunit)
+    open(qunit,file=filename,status='old',form='formatted',position='append')
+    write(qunit,'(/a,i7,a)')'Y_COORDINATES ',n2,' float'
+    close(qunit)
+    open(qunit,file=filename,status='old',access='stream',position='append',convert='BIG_ENDIAN')
+    write(qunit) y
+    close(qunit)
+    open(qunit,file=filename,status='old',form='formatted',position='append')
+    write(qunit,'(/a,i7,a)')'Z_COORDINATES ',n3,' float'
+    close(qunit)
+    open(qunit,file=filename,status='old',access='stream',position='append',convert='BIG_ENDIAN')
+    write(qunit) z
+    close(qunit)
+    open(qunit,file=filename,status='old',form='formatted',position='append')
+    write(qunit,'(/a,i14)')'POINT_DATA ',np
+    close(qunit)
+    do iw=1,3
+      open(qunit,file=filename,status='old',form='formatted',position='append')
+      write(qunit,'(a)')'SCALARS '//wname(iw)//' float'
+      write(qunit,'(a)')'LOOKUP_TABLE default'
+      close(qunit)
+      open(qunit,file=filename,status='old',access='stream',position='append',convert='BIG_ENDIAN')
+      write(qunit) real(cal_data(:,:,:,iw))
+      close(qunit)
+    end do
+    deallocate(x,y,z)
+  end subroutine write_vtk
 
 end module mod_io
