@@ -18,11 +18,11 @@ contains
     th_start     = 100
     ph_start     = 100
     ra_start     = 100
-    
+
     th_end       = 100
     ph_end       = 100
     ra_end       = 100
-    
+
     nlevel      = 1
     delta_s     = 0.1d0
     ! read parameters   
@@ -52,9 +52,12 @@ contains
 
   subroutine post_allocate()
     integer :: i
-    refine_dim_th = nlevel*floor((th_end - th_start)/d_th)+1
-    refine_dim_ph = nlevel*floor((ph_end - ph_start)/d_ph)+1
-    refine_dim_ra = nlevel*floor((ra_end - ra_start)/d_ra)+1
+    !refine_dim_th = nlevel*floor((th_end - th_start)/d_th)+1
+    !refine_dim_ph = nlevel*floor((ph_end - ph_start)/d_ph)+1
+    !refine_dim_ra = nlevel*floor((ra_end - ra_start)/d_ra)+1
+    refine_dim_th = nlevel*(th_end - th_start)+1
+    refine_dim_ph = nlevel*(ph_end - ph_start)+1
+    refine_dim_ra = nlevel*(ra_end - ra_start)+1
 
     allocate(refine_ra(refine_dim_ra))
     allocate(refine_ph(refine_dim_ph))
@@ -137,25 +140,31 @@ contains
   subroutine read_blk()
     logical :: alive
     integer(kind=i4) :: i,j,k
-    integer(kind=i8) :: ntotal
     character*1024   :: header
-    double precision :: ttime
+    real :: ttime,x1,x2,x3,B1,B2,B3
 
     inquire(file=BfieldName,exist=alive)
     if(alive) then 
       write(*,*)'OUTPUT_B: loading data and preparing input files for QSL3D'
       OPEN(UNIT=3,STATUS='OLD',ACTION='READ',FILE=BfieldName,POSITION='REWIND',FORM='UNFORMATTED')
       read(3) header
-      read(3) ntotal,dim_ra,dim_th,dim_ph
+      read(3) dim_ra,dim_th,dim_ph
       read(3) ttime
       do k=1,dim_ph
-      do j=1,dim_th
-      do i=1,dim_ra
-         read(3) Bth(i,j,k),Bph(i,j,k),Bra(i,j,k)
-      end do
-      end do
+        do j=dim_th,1,-1
+          do i=1,dim_ra
+             read(3) x1,x2,x3,B1,B2,B3
+             ra(i)=dble(x1)
+             th(j)=dble(x2)
+             ph(k)=dble(x3)
+             Bra(i,j,k)=dble(B1)
+             Bth(i,j,k)=dble(B2)
+             Bph(i,j,k)=dble(B3)
+          end do
+        end do
       end do 
       close(3)
+      write(*,'(A)')'| Data sucessfully loaded !'
     else
       write(*,'(A)')'| File '//BfieldName//' does not exist'
       stop
@@ -348,6 +357,81 @@ contains
     &Form = "unformatted" )
     write(4) cal_data
     close(4)
+    if(indataformat=='blk') call write_vtk()
   end subroutine write_data
+
+  subroutine write_vtk()
+    real :: dx1,dx2,dx3,dra,dth,dph
+    real, allocatable :: rao(:),tho(:),pho(:)
+    real, allocatable :: xd(:,:,:,:)
+    integer :: qunit,n1,n2,n3,ix1,ix2,ix3,iw
+    integer(kind=i8) :: np
+    character(len=80) :: filename,wname(3)
+
+    qunit=10
+    n1=refine_dim_ra
+    n2=refine_dim_th
+    n3=refine_dim_ph
+    np=n1*n2*n3
+    dra=real(max_ra-min_ra)
+    dth=real(max_th-min_th)
+    dph=real(max_ph-min_ph)
+    dx1=dra*real(ra_end-ra_start+1)/real(dim_ra)/(n1-1)
+    dx2=dth*real(th_end-th_start+1)/real(dim_th)/(n2-1)
+    dx3=dph*real(ph_end-ph_start+1)/real(dim_ph)/(n3-1)
+    allocate(rao(n1))
+    allocate(tho(n2))
+    allocate(pho(n3))
+    allocate(xd(3,n1,n2,n3))
+
+    do ix1=1,n1
+      rao(ix1)=real(min_ra)+(ix1-1)*dx1+dra*real(ra_start-1)/real(dim_ra)
+    end do
+    do ix2=1,n2
+      tho(ix2)=real(min_th)+(ix2-1)*dx2+dth*real(th_start-1)/real(dim_th)
+    end do
+    do ix3=1,n3
+      pho(ix3)=real(min_ph)+(ix3-1)*dx3+dph*real(ph_start-1)/real(dim_ph)
+    end do
+    do ix3=1,n3
+      do ix2=1,n2
+        do ix1=1,n1
+          xd(1,ix1,ix2,ix3)=rao(ix1)*sin(tho(ix2))*cos(pho(ix3))
+          xd(2,ix1,ix2,ix3)=rao(ix1)*sin(tho(ix2))*sin(pho(ix3))
+          xd(3,ix1,ix2,ix3)=rao(ix1)*cos(tho(ix2))
+        end do
+      end do
+    end do
+    wname(1)='Q_sqash'
+    wname(2)='L_Bline'
+    wname(3)='OC_mark'
+
+    write(*,'(a)')'| Writing vtk data ...'
+    write(filename,'(a,a)') TRIM(OutFileName),'.vtk'
+    open(qunit,file=filename,status='unknown')
+    write(qunit,'(a)')'# vtk DataFile Version 2.0'
+    write(qunit,'(a)')'Constructed solar data'
+    write(qunit,'(a)')'BINARY'
+    write(qunit,'(a)')'DATASET STRUCTURED_GRID'
+    write(qunit,'(a,i7,i7,i7)')'DIMENSIONS ',n1,n2,n3
+    write(qunit,'(a,i14,a)')'POINTS ',np,' FLOAT'
+    close(qunit)
+    open(qunit,file=filename,status='old',access='stream',position='append',convert='BIG_ENDIAN')
+    write(qunit) xd(1:3,1:n1,1:n2,1:n3)
+    close(qunit)
+    open(qunit,file=filename,status='old',form='formatted',position='append')
+    write(qunit,'(/a,i14)')'POINT_DATA ',np
+    close(qunit)
+    do iw=1,3
+      open(qunit,file=filename,status='old',form='formatted',position='append')
+      write(qunit,'(a)')'SCALARS '//wname(iw)//' float'
+      write(qunit,'(a)')'LOOKUP_TABLE default'
+      close(qunit)
+      open(qunit,file=filename,status='old',access='stream',position='append',convert='BIG_ENDIAN')
+      write(qunit) real(cal_data(:,:,:,iw))
+      close(qunit)
+    end do
+    deallocate(rao,tho,pho,xd)
+  end subroutine write_vtk
 
 end module mod_io
