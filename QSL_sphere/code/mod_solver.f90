@@ -66,17 +66,16 @@ contains
     real(kind=r8) :: x_i,y_i,z_i
     
     ph_i = refine_ph(k)
-    
+
     do j=1,refine_dim_th
        do i=1,refine_dim_ra
-    
           th_i = refine_th(j)
           r_i  = refine_ra(i)
     
           x_i = r_i*sin(th_i)*cos(ph_i)
           y_i = r_i*sin(th_i)*sin(ph_i)
           z_i = r_i*cos(th_i)
-    
+ 
           call cal_point(x_i,y_i,z_i,q_slice(i,j),&
                &end_slice(i,j),length_slice(i,j))
        end do
@@ -123,6 +122,7 @@ contains
     
     LineP(1:3)=(/PosiX,PosiY,PosiZ/)
     call initializeUV(LineP)
+
     call fieldline(LineP,LineF,LineB,length)
     ! define the normal vectors at the two targed planes.
 
@@ -193,7 +193,9 @@ contains
     real(kind=r8)::LineB(13)
     real(kind=r8)::sig,lengthF,lengthB,length
     sig = real(1,kind=r8)
+
     call integralLine(LineP,LineF,sig,lengthF)
+
     sig = real(-1,kind=r8)
     call integralLine(LineP,LineB,sig,lengthB)
     call diffLine(LineP(1:3),LineP(10:13))
@@ -221,6 +223,7 @@ contains
     do while (n_step .le. isn .and. flag .eq. 1)
        s_end = s_start + ds
        call rk4(rhs,neqn,s_start,s_end,tmp,flag)
+
        s_start = s_end
        n_step  = n_step+1
     end do

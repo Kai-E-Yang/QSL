@@ -172,7 +172,6 @@ contains
       read(3) ra(1:dim_ra)
       read(3) th(1:dim_th)
       read(3) ph(1:dim_ph)
-      
       read(3) Bra(1:dim_ra,1:dim_th,1:dim_ph)
       read(3) Bth(1:dim_ra,1:dim_th,1:dim_ph)
       read(3) Bph(1:dim_ra,1:dim_th,1:dim_ph)
@@ -326,7 +325,7 @@ contains
     end do
     end do
     end do
-
+    
     max_th = maxval(th)
     max_ph = maxval(ph)
     max_ra = maxval(ra)

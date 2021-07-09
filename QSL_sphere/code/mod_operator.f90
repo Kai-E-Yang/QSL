@@ -196,6 +196,7 @@ contains
     
     call car2polar(Posi,posi_rtp)
     call find_index(posi_rtp,nnn,drtp)
+
     call corner(nnn,xv)
     call xitp(bvec,xv,drtp)
     binter = sqrt(dot_product(bvec,bvec))    
@@ -205,6 +206,7 @@ contains
        Tangent(1:3) = bvec/binter
        Tangent(4)   = binter
     end if
+
   end subroutine diffLine
 
   subroutine diffB(Posi,dBx,dBy,dBz)
@@ -224,7 +226,7 @@ contains
     dx(1) = dxyz
     dy(2) = dxyz
     dz(3) = dxyz
-    
+
     call diffLine(Posi+dx,Tan1)
     call diffLine(Posi-dx,Tan2)
     call diffLine(Posi+dy,Tan3)
@@ -247,6 +249,7 @@ contains
     dBx = dBx/(dxyz*real(2,kind=r8))
     dBy = dBy/(dxyz*real(2,kind=r8))
     dBz = dBz/(dxyz*real(2,kind=r8))
+
   end subroutine diffB
 
 ! ---- the ODE solver runge-kutta 4 order method -----
@@ -269,13 +272,10 @@ contains
     flag = 1
     dt = t_out - t
     y_tmp = y
-    
     call f(t,y,yp)
-    k1 = dt*yp
-    
+    k1 = dt*yp    
     call f(t+0.5*dt,y + 0.5*k1,yp)
-    k2 = dt*yp
-    
+    k2 = dt*yp    
     call f(t+0.5*dt,y+0.5*k2,yp)
     k3 = dt*yp
     
@@ -333,6 +333,7 @@ contains
     real(kind = r8)::dBx(3),dBy(3),dBz(3)
     
     call diffLine(y(1:3),TangentB)
+
     call diffB(y(1:3),dBx,dBy,dBz)
     
     yp(1:3) = TangentB(1:3)
@@ -403,7 +404,7 @@ contains
        drtp(2) = real(0,kind=r8)
     else
        do i=1,dim_th-1
-          if(th(i) .gt. posi(2) .and. th(i+1) .le. posi(2) ) then
+          if(th(i) .le. posi(2) .and. th(i+1) .gt. posi(2) ) then
             nnn(2) = i
             drtp(2) = (posi(2) - th(i))/( th(i+1) - th(i) )
             exit
@@ -426,7 +427,6 @@ contains
           end if
        end do
     end if
-
   end subroutine find_index
 
 end module mod_operator
