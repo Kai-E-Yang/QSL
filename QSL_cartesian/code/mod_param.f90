@@ -19,7 +19,8 @@ implicit none
 
   real(kind=r8) :: delta_s
   real(kind=r8),dimension(:,:,:),allocatable :: Bx,By,Bz
-  real(kind=r8),dimension(:,:,:),allocatable :: x,y,z
+  real,dimension(:),allocatable :: x,y,z
+  real :: x_min,x_max,y_min,y_max,z_min,z_max 
 
   real(kind=r8),dimension(:,:,:,:),allocatable :: cal_data
 
@@ -28,6 +29,6 @@ implicit none
 
   namelist /filename_par/ BfieldName, OutFileName, indataformat
   namelist /cal_par/ nthreads,dimx,dimy,dimz,x_start,y_start, &
-    z_start,x_end,y_end,z_end,nlevel,delta_s
+    z_start,x_end,y_end,z_end,nlevel,delta_s,x_min,x_max,y_min,y_max,z_min,z_max
     
 end module mod_param
