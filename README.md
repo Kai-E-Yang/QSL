@@ -37,6 +37,8 @@ For the latest version, the method is that proposed in Scott 2017 ApJ and Tassev
 
 - v9 C.X. Apr/2021@YNU add vtk format for output data.
 
+- Yang Guo Dec/2022@NJU fixed some bugs for the position index.
+
 ## How to use it
 1, compile the program by using the makefile
 ```

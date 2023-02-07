@@ -12,6 +12,7 @@ implicit none
 
   integer :: dim_th,dim_ph,dim_ra
   integer :: refine_dim_th,refine_dim_ph,refine_dim_ra
+  logical :: outputvtk
 
   real(kind=r8) :: th_start,ph_start,ra_start
   real(kind=r8) :: th_end,ph_end,ra_end
@@ -37,7 +38,7 @@ implicit none
   real(kind=r8) :: BoundaryEps
   real(kind=r8) :: eps_B
 
-  namelist /filename_par/ BfieldName, OutFileName, indataformat
+  namelist /filename_par/ BfieldName, OutFileName, indataformat, outputvtk
   namelist /cal_par/ nthreads,dim_ra,dim_th,dim_ph,th_start,ph_start, &
     ra_start,ph_end,ra_end,th_end,nlevel,delta_s
     

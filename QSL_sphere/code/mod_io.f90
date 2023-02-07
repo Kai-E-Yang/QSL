@@ -9,6 +9,7 @@ contains
     BfieldName   = 'bfield.binary'
     OutFileName  = 'result.binary'
     indataformat = 'binary'
+    outputvtk    = .false.
 
     nthreads    = 1
     dim_th        = 100
@@ -18,11 +19,11 @@ contains
     th_start     = 100
     ph_start     = 100
     ra_start     = 100
-
+    
     th_end       = 100
     ph_end       = 100
     ra_end       = 100
-
+    
     nlevel      = 1
     delta_s     = 0.1d0
     ! read parameters   
@@ -52,12 +53,9 @@ contains
 
   subroutine post_allocate()
     integer :: i
-    !refine_dim_th = nlevel*floor((th_end - th_start)/d_th)+1
-    !refine_dim_ph = nlevel*floor((ph_end - ph_start)/d_ph)+1
-    !refine_dim_ra = nlevel*floor((ra_end - ra_start)/d_ra)+1
-    refine_dim_th = nlevel*(th_end - th_start)+1
-    refine_dim_ph = nlevel*(ph_end - ph_start)+1
-    refine_dim_ra = nlevel*(ra_end - ra_start)+1
+    refine_dim_th = nlevel*floor((th_end - th_start)/d_th)+1
+    refine_dim_ph = nlevel*floor((ph_end - ph_start)/d_ph)+1
+    refine_dim_ra = nlevel*floor((ra_end - ra_start)/d_ra)+1
 
     allocate(refine_ra(refine_dim_ra))
     allocate(refine_ph(refine_dim_ph))
@@ -65,14 +63,22 @@ contains
 
     allocate(cal_data(refine_dim_ra,refine_dim_th,refine_dim_ph,3))
 
-    refine_th = th_end+(th_start-th_end)&
-            & * (/(real(i-1,kind=r8),i=1,refine_dim_th)/)&
-            & / (refine_dim_th-1)
+    if(refine_dim_th .eq. 1) then 
+      refine_th = (/th_start/)
+    else
+      refine_th = th_end+(th_start-th_end)&
+              & * (/(real(i-1,kind=r8),i=1,refine_dim_th)/)&
+              & / (refine_dim_th-1)
+    end if 
     
-    refine_ph = ph_start+(ph_end-ph_start)&
-            & * (/(real(i-1,kind=r8),i=1,refine_dim_ph)/)&
-            & / (refine_dim_ph-1)
-    
+    if(refine_dim_ph .eq. 1) then 
+      refine_ph = (/ph_start/)
+    else
+      refine_ph = ph_start+(ph_end-ph_start)&
+              & * (/(real(i-1,kind=r8),i=1,refine_dim_ph)/)&
+              & / (refine_dim_ph-1)
+    end if
+
     if(refine_dim_ra .eq. 1) then 
       refine_ra = (/ra_start/)
     else
@@ -140,31 +146,25 @@ contains
   subroutine read_blk()
     logical :: alive
     integer(kind=i4) :: i,j,k
+    integer(kind=i8) :: ntotal
     character*1024   :: header
-    real :: ttime,x1,x2,x3,B1,B2,B3
+    double precision :: ttime
 
     inquire(file=BfieldName,exist=alive)
     if(alive) then 
       write(*,*)'OUTPUT_B: loading data and preparing input files for QSL3D'
       OPEN(UNIT=3,STATUS='OLD',ACTION='READ',FILE=BfieldName,POSITION='REWIND',FORM='UNFORMATTED')
       read(3) header
-      read(3) dim_ra,dim_th,dim_ph
+      read(3) ntotal,dim_ra,dim_th,dim_ph
       read(3) ttime
       do k=1,dim_ph
-        do j=dim_th,1,-1
-          do i=1,dim_ra
-             read(3) x1,x2,x3,B1,B2,B3
-             ra(i)=dble(x1)
-             th(j)=dble(x2)
-             ph(k)=dble(x3)
-             Bra(i,j,k)=dble(B1)
-             Bth(i,j,k)=dble(B2)
-             Bph(i,j,k)=dble(B3)
-          end do
-        end do
+      do j=1,dim_th
+      do i=1,dim_ra
+         read(3) Bth(i,j,k),Bph(i,j,k),Bra(i,j,k)
+      end do
+      end do
       end do 
       close(3)
-      write(*,'(A)')'| Data sucessfully loaded !'
     else
       write(*,'(A)')'| File '//BfieldName//' does not exist'
       stop
@@ -181,6 +181,7 @@ contains
       read(3) ra(1:dim_ra)
       read(3) th(1:dim_th)
       read(3) ph(1:dim_ph)
+      
       read(3) Bra(1:dim_ra,1:dim_th,1:dim_ph)
       read(3) Bth(1:dim_ra,1:dim_th,1:dim_ph)
       read(3) Bph(1:dim_ra,1:dim_th,1:dim_ph)
@@ -334,7 +335,7 @@ contains
     end do
     end do
     end do
-    
+
     max_th = maxval(th)
     max_ph = maxval(ph)
     max_ra = maxval(ra)
@@ -356,7 +357,7 @@ contains
     &Form = "unformatted" )
     write(4) cal_data
     close(4)
-    if(indataformat=='blk') call write_vtk()
+    if(outputvtk) call write_vtk()
   end subroutine write_data
 
   subroutine write_vtk()
