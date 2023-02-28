@@ -1,5 +1,6 @@
-# QSL
-## This code is named as K-QSL
+# K-QSL
+A package to calculate squashing degree Q in both Cartesian and spherical coordinates
+
 ## What to do
 The file main.f90 is the main program.
 
@@ -13,11 +14,11 @@ The file mod_solver.f90 contains the main pathway for the calculation.
 
 This program is used for calculating the squashing factor Q.
 
-The old method is proposed by Pariat & Demoulin 2012, which is not used anymore.
+The old method is proposed by Pariat & Demoulin (2012, A&A), which is not used anymore. A legacy can be found [here](https://github.com/njuguoyang/magnetic_modeling_codes/tree/main/code/QSL).
 
-For the latest version, the method is that proposed in Scott 2017 ApJ and Tassev and Savcheva 2017 ApJ.
+For the latest version, the method is that proposed in Scott (2017, ApJ) and Tassev & Savcheva (2017, ApJ).
 
-## History:
+## History
 - v1 K.Y. 2016@NJU
 
 - v2 K.Y. Jun/2017@MSU change the compiler from ifort to gfortran.
@@ -99,7 +100,7 @@ The format of the par file is the namelist in fortran, e.g.,
 /
 ```
 
-## Other Note:
+## Other Note
 This parallel version is based on FORTRAN OPENMP.
 
 If one want to use N threads for the calculation, just change the value of parameter 'nthreads' in parameter file. If this parameter is defined as 0, then the max number of threads in the computer will be used as default. The default value in the program is 1.
