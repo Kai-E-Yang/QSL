@@ -326,14 +326,12 @@ contains
 ! ----------- R.H.S. of the ODE ----------
   subroutine rhs(t,y,yp)
     integer,parameter :: neqn = 9
-    real(kind = r8)::t
+    real(kind = r8),intent(in)::t
     real(kind = r8)::y(neqn)
     real(kind = r8)::yp(neqn)
     real(kind = r8)::TangentB(4)
     real(kind = r8)::dBx(3),dBy(3),dBz(3)
     
-    t=0.0d0
-
     call diffLine(y(1:3),TangentB)
     call diffB(y(1:3),dBx,dBy,dBz)
     
