@@ -109,16 +109,16 @@ The field line integral method is Runge-Kutta 4(5).
 
 
 ## Checking Accuracy
-Based on the PFSS dipole field with source surface at 2.5 $ R_{\odot} $:
+Based on the PFSS dipole field with source surface at 2.5 $R_{\odot}$:
 
-$ B_r = 4/129*(125/(4*r^3)+1)*\cos(\theta) $
+$B_r = 4/129*(125/(4*r^3)+1)*\cos(\theta)$
 
-$ B_{\theta} = 4/(129*r)*(125/(8*r^2)-r)*\sin(\theta) $
+$B_{\theta} = 4/(129*r)*(125/(8*r^2)-r)*\sin(\theta)$
 
 It is very clear that the $ Q_{\perp} $ in the closed field region should be constantly 2, since the field line induced map is symmetric and uniform:
 
-$ (R_{\odot}, \theta, \phi)$--> $(R_{\odot}, \Pi-\theta, \phi). $
+$(R_{\odot}, \theta, \phi)$--> $(R_{\odot}, \pi-\theta, \phi).$
 
-Let's look at the open field line, $ \Phi $ component is zero, the field line equation is: $ \frac{dr}{B_r}=\frac{rd\theta}{B_{\theta}} $, since the field components are radius-angle separatable. The equation can be convert to:
+Let's look at the open field line, $ \Phi $ component is zero, the field line equation is: $\frac{dr}{B_r}=\frac{rd\theta}{B_{\theta}}$, since the field components are radius-angle separatable. The equation can be convert to:
 
-$ \frac{125/(8*r^2)-r}{125/(4*r^3)+1} dr = \frac{\cos(\theta)}{\sin(\theta)}d\theta $
+$\frac{125/(8*r^2)-r}{125/(4*r^3)+1}dr=\frac{\cos(\theta)}{\sin(\theta)}d\theta$
