@@ -126,9 +126,9 @@ $$\frac{125/(8r^2)-r}{125/(4r^3)+1}dr=\frac{\cos(\theta)}{\sin(\theta)}d\theta$$
 
 Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{Rs})/\sin(\theta_{R\odot}))=Const.`$, where $`Const.=\int\frac{125/(8*r^2)-r}{125/(4*r^3)+1}dr`$.
 By using NIntegrate in Mathematica, it is 0.266657, when we start from $R_{cal}=1.01R_{\odot}$ and end at $Rs=2.5R_{\odot}$, where $R_{cal}$ is the spherical surface where we calculate the squashing factor $Q_{\perp}$.
-Then $`\sin(\theta_{Rcal})=e^{Const.}\sin(\theta_{Rs})`$. We can obtain the separatrix layer locates on $R_{cal}$ surface, $\theta_{SL}=\arcsin(e^{Const.})$.
+Then $`\sin(\theta_{Rs})=e^{Const.}\sin(\theta_{Rcal})`$. We can obtain the separatrix layer locates on $R_{cal}$ surface, $\theta_{SL}=\arcsin(e^{-Const.})\approx 0.8724955346952092$.
 
-By considering the $Q_{\perp}$ defined by Titov 2007, from Eqs. (36)--(41).
+By considering the $Q_{\perp}$ defined by Titov 2007 ApJ 660 863, from Eqs. (36)--(41).
 The determinant, $\Delta_{\perp}$, of the map is $|\frac{B_{Rcal}}{B_{Rs}}|$.
 The matrix $G^*_{\perp}$ is
 
@@ -159,5 +159,8 @@ Then the square of the matrix norm $`N_{\perp}^2=tr(D^{\top}G^*_{\perp}DG^{\perp
 
 $$N_{\perp}^2=\frac{R_S^2}{R_{cal}^2}e^{2Const.}(1+\frac{\cos^2(\theta_{Rcal})}{1-e^{2Const.}\sin^2(\theta_{Rcal})}(1+\frac{B^2_{\theta,Rcal}}{B^2_{r,Rcal}})) $$
 
-Then $Q_{\prep}=N_{\perp}^2/\Delta_{\prep}$. The results are shown in the following figure:
+Then $Q_{\perp}=N_{\perp}^2/\Delta_{\perp}$. The results are shown in the following figure:
 <p align="center"><img src="https://raw.githubusercontent.com/Kai-E-Yang/QSL/master/fig/K-QSL_vs_Theory.png" /></p>
+
+The upper-left panel reveals a close match between K-QSL results and theoretical values. Along the latitude, $Q_{\perp}$ exhibits a narrow layer where its value exceeds 10. While the separatrix layer should ideally display an infinite value, a denser mesh grid is needed to accurately capture this structure; this is illustrated in the bottom panel, which compares K-QSL calculations based on 200,000 points with theoretical calculations using $10^7$ points. The upper-right panel presents findings from varied delta_s values in K-QSL, suggesting that delta_s < 1 could give a better result in practice.
+
