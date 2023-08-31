@@ -111,26 +111,49 @@ The field line integral method is Runge-Kutta 4(5).
 ## Checking Accuracy
 Based on the PFSS dipole field with source surface $Rs$= 2.5 $R_{\odot}$:
 
- $$B_r=\frac{4}{129}(\frac{125}{4r^3}+1)\cos(\theta)$$
+$$B_r=\frac{4}{129}(\frac{125}{4r^3}+1)\cos(\theta)$$
 
- $$B_{\theta}=\frac{4}{129r}(\frac{125}{8r^2}-r)\sin(\theta)$$
+$$B_{\theta}=\frac{4}{129r}(\frac{125}{8r^2}-r)\sin(\theta)$$
 
 It is very clear that the $Q_{\perp}$ in the closed field region should be constantly 2, since the field line induced map is symmetric and uniform:
 
- $$(R_{\odot},\theta,\phi)-->(R_{\odot},\pi-\theta,\phi)$$
+$$(R_{\odot},\theta,\phi)-->(R_{\odot},\pi-\theta,\phi)$$
 
 Let's look at the open field line, $\Phi$ component is zero, the field line equation is: $`\frac{dr}{B_r}=\frac{rd\theta}{B_{\theta}}`$, 
 since the field components are radius-angle separatable, the equation can be convert to:
 
- $$\frac{125/(8r^2)-r}{125/(4r^3)+1}dr=\frac{\cos(\theta)}{\sin(\theta)}d\theta$$
+$$\frac{125/(8r^2)-r}{125/(4r^3)+1}dr=\frac{\cos(\theta)}{\sin(\theta)}d\theta$$
 
-Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{Rs})/\sin(\theta_{R\odot}))=Const.`$, where $`Const.=\int_{R_{\odot}}^{Rs}\frac{125/(8*r^2)-r}{125/(4*r^3)+1}dr`$.
-By NIntegrate in Mathematica, it is 0.266657, when we start from 1.01$R_{\odot}$ and end at $Rs=2.5R_{\odot}$.
-Then $`\sin(\theta_{R\odot})=e^{Const.}\sin(\theta_{Rs})`$.
+Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{Rs})/\sin(\theta_{R\odot}))=Const.`$, where $`Const.=\int\frac{125/(8*r^2)-r}{125/(4*r^3)+1}dr`$.
+By using NIntegrate in Mathematica, it is 0.266657, when we start from $R_{cal}=1.01R_{\odot}$ and end at $Rs=2.5R_{\odot}$.
+Then $`\sin(\theta_{Rcal})=e^{Const.}\sin(\theta_{Rs})`$. We can obtain the separatrix layer locates on $R_{cal}$ surface, $\theta_{SL}=\arcsin(e^{Const.})$.
 
 By considering the $Q_{\perp}$ defined by Titov 2007, from Eqs. (36)--(41).
-The
+The determinant, $\Delta_{\perp}$, of the map can equal $|\frac{B_{Rcal}}{B_{Rs}}|$.
+The matrix $G^*_{\perp}$ is
 
+```math
+Rs^2\begin{bmatrix}
+\sin^2{\theta_{Rs}} & 0\\
+0 & 1\\
+\end{bmatrix}
+```
+
+The matrix $G^{\perp}$ is
+```math
+R_{cal}^{-2}\begin{bmatrix}
+\sin^{-2}(\theta) & 0\\
+0 & \frac{\frac{125}{8r^3} - 1 }{\frac{125}{4r^3} + 1 }\tan(\theta_{cal})\\
+\end{bmatrix}
+```
+
+The matrix $D$ is
+```math
+\begin{bmatrix}
+1 & 0 \\
+0 & e^{Const.}\frac{\cos(theta_{Rs})}{\cos(\theta_{Rcal})}\\
+\end{bmatrix}
+```
 
 The results are shown in the following figure:
 <p align="center"><img src="https://raw.githubusercontent.com/Kai-E-Yang/QSL/master/fig/K-QSL_vs_Theory.png" /></p>
