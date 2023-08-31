@@ -167,3 +167,4 @@ The upper-left panel reveals a close match between K-QSL results and theoretical
 ## TODO List
 - non-uniform magnetic field (progress ... 100%).
 - adaptive mesh refinement for capturing the fine structure (progress ... 90%).
+- A new method will come soon (progress ... 50%).
