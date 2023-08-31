@@ -151,13 +151,13 @@ The matrix $D$ is
 ```math
 \begin{bmatrix}
 1 & 0 \\
-0 & e^{Const.}\frac{\cos(\theta_{Rs})}{\cos(\theta_{Rcal})}
+0 & e^{Const.}\frac{\cos(\theta_{Rcal})}{\cos(\theta_{Rs})}
 \end{bmatrix}
 ```
 
 Then the square of the matrix norm $`N_{\perp}^2=tr(D^{\top}G^*_{\perp}DG^{\perp})`$ is
 
-$$N_{\perp}^2=\frac{R_S^2}{R_{cal}^2}(1+\frac{\cos(\theta_{cal})^2}{1-e^{2Const.}\sin(\theta_{cal})^2}(1+\frac{B^2_{\theta,Rcal}}{B^2_{r,Rcal}})) $$
+$$N_{\perp}^2=\frac{R_S^2}{R_{cal}^2}e^{2Const.}(1+\frac{\cos^2(\theta_{Rcal})}{1-e^{2Const.}\sin^2(\theta_{Rcal})}(1+\frac{B^2_{\theta,Rcal}}{B^2_{r,Rcal}})) $$
 
-The results are shown in the following figure:
+Then $Q_{\prep}=N_{\perp}^2/\Delta_{\prep}$. The results are shown in the following figure:
 <p align="center"><img src="https://raw.githubusercontent.com/Kai-E-Yang/QSL/master/fig/K-QSL_vs_Theory.png" /></p>
