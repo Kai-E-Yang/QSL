@@ -143,7 +143,7 @@ The matrix $G^{\perp}$ is
 ```math
 R_{cal}^{-2}\begin{bmatrix}
 \sin^{-2}(\theta_{Rcal}) & 0\\
-0 & 1+(\frac{\frac{125}{8r^3} - 1 }{\frac{125}{4r^3} + 1 }\tan(\theta_{Rcal}))^2
+0 & 1+\frac{B^2_{\theta,Rcal}}{B^2_{r,Rcal}}
 \end{bmatrix}
 ```
 
@@ -155,9 +155,9 @@ The matrix $D$ is
 \end{bmatrix}
 ```
 
-Then the square of the matrix norm $`N_{\perp}^2=\tr(D^{\top}G^*_{\perp}DG^{\perp})`$ is
+Then the square of the matrix norm $`N_{\perp}^2=tr(D^{\top}G^*_{\perp}DG^{\perp})`$ is
 
-$$N_{\perp}^2=\frac{R_S^2}{R_{cal}^2}(1+\frac{\cos(\theta_{cal})^2}{1-e^{2Const.}\sin(\theta_{cal}^2)}(1+\frac{B_{\theta,Rcal}}{B_{r,Rcal}})) $$
+$$N_{\perp}^2=\frac{R_S^2}{R_{cal}^2}(1+\frac{\cos(\theta_{cal})^2}{1-e^{2Const.}\sin(\theta_{cal})^2}(1+\frac{B^2_{\theta,Rcal}}{B^2_{r,Rcal}})) $$
 
 The results are shown in the following figure:
 <p align="center"><img src="https://raw.githubusercontent.com/Kai-E-Yang/QSL/master/fig/K-QSL_vs_Theory.png" /></p>
