@@ -155,7 +155,8 @@ The matrix $D$ is
 \end{bmatrix}
 ```
 
-Then the square of the matrix norm $N_{\perp}^2=\tr(D^{\top}G^*_{\perp}DG^{\perp})$ is
+Then the square of the matrix norm $`N_{\perp}^2=\tr(D^{\top}G^*_{\perp}DG^{\perp})`$ is
+
 $$N_{\perp}^2=\frac{R_S^2}{R_{cal}^2}(1+\frac{\cos(\theta_{cal})^2}{1-e^{2Const.}\sin(\theta_{cal}^2)}(1+\frac{B_{\theta,Rcal}}{B_{r,Rcal}})) $$
 
 The results are shown in the following figure:
