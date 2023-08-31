@@ -117,7 +117,7 @@ $$B_{\theta}=\frac{4}{129r}(\frac{125}{8r^2}-r)\sin(\theta)$$
 
 It is very clear that the $Q_{\perp}$ in the closed field region should be constantly 2, since the field line induced map is symmetric and uniform:
 
-$$(R_{\odot},\theta,\phi)-->(R_{\odot},\pi-\theta,\phi)$$
+$$(R_{\odot},\theta,\phi)\mapsto(R_{\odot},\pi-\theta,\phi)$$
 
 Let's look at the open field line, $\Phi$ component is zero, the field line equation is: $`\frac{dr}{B_r}=\frac{rd\theta}{B_{\theta}}`$, 
 since the field components are radius-angle separatable, the equation can be convert to:
@@ -133,17 +133,17 @@ The determinant, $\Delta_{\perp}$, of the map can equal $|\frac{B_{Rcal}}{B_{Rs}
 The matrix $G^*_{\perp}$ is
 
 ```math
-Rs^2\begin{bmatrix}
+Rs^2\begin{matrix}
 \sin^2{\theta_{Rs}} & 0\\
 0 & 1\\
-\end{bmatrix}
+\end{matrix}
 ```
 
 The matrix $G^{\perp}$ is
 ```math
 R_{cal}^{-2}\begin{bmatrix}
-\sin^{-2}(\theta) & 0\\
-0 & \frac{\frac{125}{8r^3} - 1 }{\frac{125}{4r^3} + 1 }\tan(\theta_{cal})\\
+\sin^{-2}(\theta_{Rcal}) & 0\\
+0 & \frac{\frac{125}{8r^3} - 1 }{\frac{125}{4r^3} + 1 }\tan(\theta_{Rcal})\\
 \end{bmatrix}
 ```
 
@@ -151,7 +151,7 @@ The matrix $D$ is
 ```math
 \begin{bmatrix}
 1 & 0 \\
-0 & e^{Const.}\frac{\cos(theta_{Rs})}{\cos(\theta_{Rcal})}\\
+0 & e^{Const.}\frac{\cos(\theta_{Rs})}{\cos(\theta_{Rcal})}\\
 \end{bmatrix}
 ```
 
