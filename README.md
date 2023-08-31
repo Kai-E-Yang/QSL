@@ -164,3 +164,6 @@ Then $Q_{\perp}=N_{\perp}^2/\Delta_{\perp}$. The results are shown in the follow
 
 The upper-left panel reveals a close match between K-QSL results and theoretical values. Along the latitude, $Q_{\perp}$ exhibits a narrow layer where its value exceeds 10. While the separatrix layer should ideally display an infinite value, a denser mesh grid is needed to accurately capture this structure; this is illustrated in the bottom panel, which compares K-QSL calculations based on 200,000 points with theoretical calculations using $10^7$ points. The upper-right panel presents findings from varied delta_s values in K-QSL, suggesting that delta_s < 1 could give a better result in practice.
 
+## TODO List
+- non-uniform magnetic field (progress ... 100%).
+- adaptive mesh refinement for capturing the fine structure (progress ... 90%).
