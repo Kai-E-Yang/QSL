@@ -125,7 +125,7 @@ since the field components are radius-angle separatable, the equation can be con
 $$\frac{125/(8r^2)-r}{125/(4r^3)+1}dr=\frac{\cos(\theta)}{\sin(\theta)}d\theta$$
 
 Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{Rs})/\sin(\theta_{R\odot}))=Const.`$, where $`Const.=\int\frac{125/(8*r^2)-r}{125/(4*r^3)+1}dr`$.
-By using NIntegrate in Mathematica, it is 0.266657, when we start from $R_{cal}=1.01R_{\odot}$ and end at $Rs=2.5R_{\odot}$, where $R_{cal}$ is the spherical surface where we calculate the squashing factor $Q_{\perp}$
+By using NIntegrate in Mathematica, it is 0.266657, when we start from $R_{cal}=1.01R_{\odot}$ and end at $Rs=2.5R_{\odot}$, where $R_{cal}$ is the spherical surface where we calculate the squashing factor $Q_{\perp}$.
 Then $`\sin(\theta_{Rcal})=e^{Const.}\sin(\theta_{Rs})`$. We can obtain the separatrix layer locates on $R_{cal}$ surface, $\theta_{SL}=\arcsin(e^{Const.})$.
 
 By considering the $Q_{\perp}$ defined by Titov 2007, from Eqs. (36)--(41).
@@ -133,7 +133,7 @@ The determinant, $\Delta_{\perp}$, of the map is $|\frac{B_{Rcal}}{B_{Rs}}|$.
 The matrix $G^*_{\perp}$ is
 
 ```math
-Rs^2\begin{bmatrix}
+R_S^2\begin{bmatrix}
 \sin^2{\theta_{Rs}} & 0\\
 0 & 1
 \end{bmatrix}
@@ -143,7 +143,7 @@ The matrix $G^{\perp}$ is
 ```math
 R_{cal}^{-2}\begin{bmatrix}
 \sin^{-2}(\theta_{Rcal}) & 0\\
-0 & \frac{\frac{125}{8r^3} - 1 }{\frac{125}{4r^3} + 1 }\tan(\theta_{Rcal})
+0 & 1+(\frac{\frac{125}{8r^3} - 1 }{\frac{125}{4r^3} + 1 }\tan(\theta_{Rcal}))^2
 \end{bmatrix}
 ```
 
@@ -155,8 +155,8 @@ The matrix $D$ is
 \end{bmatrix}
 ```
 
-Then the square of the matrix norm $N_{\perp}^2=\Tr(D^{\top})G^*_{\perp}DG^{\perp}$ is
-
+Then the square of the matrix norm $N_{\perp}^2=\tr(D^{\top}G^*_{\perp}DG^{\perp})$ is
+$$N_{\perp}^2=\frac{R_S^2}{R_{cal}^2}(1+\frac{\cos(\theta_{cal})^2}{1-e^{2Const.}\sin(\theta_{cal}^2)}(1+\frac{B_{\theta,Rcal}}{B_{r,Rcal}})) $$
 
 The results are shown in the following figure:
 <p align="center"><img src="https://raw.githubusercontent.com/Kai-E-Yang/QSL/master/fig/K-QSL_vs_Theory.png" /></p>
