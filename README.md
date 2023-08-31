@@ -41,6 +41,8 @@ For the latest version, the method is that proposed in Scott (2017, ApJ) and Tas
 
 - Yang Guo Dec/2022@NJU fixed some bugs for the position index.
 
+- Chloe Wilkins 2023@newcastle fixed bugs in the test field generation.
+
 ## How to use it
 1, compile the program by using the makefile
 ```
