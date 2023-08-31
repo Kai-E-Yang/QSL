@@ -123,9 +123,15 @@ Let's look at the open field line, $\Phi$ component is zero, the field line equa
 
  $\frac{125/(8r^2)-r}{125/(4r^3)+1}dr$ $=\frac{\cos(\theta)}{\sin(\theta)}d\theta$
 
-Then the LHS and RHS can be integral separately, lead to $\ln(\sin(\theta_{Rs})/\sin(\theta_{R\odot}))=Const.$, where $Const.=\int_{R_{\odot}}^{Rs}$$\frac{125/(8*r^2)-r}{125/(4*r^3)+1}dr$.
+Then the LHS and RHS can be integral separately, lead to $\ln(\sin(\theta_{Rs})/\sin(\theta_{R\odot}))=Const.$, where $Const.=\int_{R_{\odot}}^{Rs}$ $\frac{125/(8*r^2)-r}{125/(4*r^3)+1}dr$.
 By NIntegrate in Mathematica, it is 0.266657, when we set $R_{\odot}=1.01$ and $Rs=2.5$.
 Then $\sin(\theta_{R\odot})=e^{Const.}\sin(\theta_{Rs})$.
 
 By considering the $Q_{\perp}$ defined by Titov 2007, from Eqs. (36)--(41).
+The
+
+
+The results are shown in the following figure:
+![result](https://github.com/Kai-E-Yang/QSL/tree/master/fig/K-QSL_vs_Theory.png)
+
 
