@@ -132,6 +132,6 @@ The
 
 
 The results are shown in the following figure:
-![result](https://github.com/Kai-E-Yang/QSL/tree/master/fig/K-QSL_vs_Theory.png)
+![result](https://github.com/Kai-E-Yang/QSL/master/fig/K-QSL_vs_Theory.png)
 
 
