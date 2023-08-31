@@ -115,14 +115,15 @@ Based on the PFSS dipole field with source surface at 2.5 $R_{\odot}$:
 
  $B_{\theta}=4/(129*r)*(125/(8*r^2)-r)*\sin(\theta)$
 
-It is very clear that the $ Q_{\perp} $ in the closed field region should be constantly 2, since the field line induced map is symmetric and uniform:
+It is very clear that the $Q_{\perp}$ in the closed field region should be constantly 2, since the field line induced map is symmetric and uniform:
 
  $(R_{\odot}, \theta, \phi)$--> $(R_{\odot}, \pi-\theta, \phi).$
 
-Let's look at the open field line, $ \Phi $ component is zero, the field line equation is: $\frac{dr}{B_r}=\frac{rd\theta}{B_{\theta}}$, since the field components are radius-angle separatable, the equation can be convert to:
+Let's look at the open field line, $\Phi$ component is zero, the field line equation is: $\frac{dr}{B_r}=\frac{rd\theta}{B_{\theta}}$, since the field components are radius-angle separatable, the equation can be convert to:
 
  $\frac{125/(8*r^2)-r}{125/(4*r^3)+1}dr=\frac{\cos(\theta)}{\sin(\theta)}d\theta$
 
-Then the LHS and RHS can be integral separately, lead to $\ln(\sin(\theta_{Rs})/\sin(\theta_{R\odot}))=Const.$, where $Const.=\int_{R_{\odot}}^{Rs}\frac{125/(8*r^2)-r}{125/(4*r^3)+1}dr$, by NIntegrate, it is 0.266657, when we set $R_{\odot}=1.01$ and $Rs=2.5$.
+Then the LHS and RHS can be integral separately, lead to $\ln(\sin(\theta_{Rs})/\sin(\theta_{R\odot}))=Const.$, where $Const.=\int_{R_{\odot}}^{Rs}\frac{125/(8*r^2)-r}{125/(4*r^3)+1}dr$.
+By NIntegrate in Mathematica, it is 0.266657, when we set $R_{\odot}=1.01$ and $Rs=2.5$.
 Then $\sin(\theta_{R\odot})=e^{Const.}\sin(\theta_{Rs})$.
 
