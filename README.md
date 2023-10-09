@@ -35,7 +35,7 @@ For the latest version, the method is that proposed in Scott (2017, ApJ) and Tas
 
 - v8 K.Y. Oct/2019@SIFA collect all the files in mod format.
 
-   K.Y. NOv/2019@SIFA correct the version in spherical coordinate system.
+   K.Y. Nov/2019@SIFA correct the version in spherical coordinate system.
 
 - v9 C.X. Apr/2021@YNU add vtk format for output data.
 
@@ -126,7 +126,7 @@ since the field components are radius-angle separatable, the equation can be con
 
 $$\frac{125/(8r^2)-r}{125/(4r^3)+1}dr=\frac{\cos(\theta)}{\sin(\theta)}d\theta$$
 
-Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{Rs})/\sin(\theta_{R\odot}))=Const.`$, where $`Const.=\int\frac{125/(8*r^2)-r}{125/(4*r^3)+1}dr`$.
+Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{Rs})/\sin(\theta_{R\odot}))=Const.`$, where $`Const.=\int\frac{125/(8*r^3)-1}{125/(4*r^2)+r}dr`$.
 By using NIntegrate in Mathematica, it is 0.266657, when we start from $R_{cal}=1.01R_{\odot}$ and end at $Rs=2.5R_{\odot}$, where $R_{cal}$ is the spherical surface where we calculate the squashing factor $Q_{\perp}$.
 Then $`\sin(\theta_{Rs})=e^{Const.}\sin(\theta_{Rcal})`$. We can obtain the separatrix layer locates on $R_{cal}$ surface, $\theta_{SL}=\arcsin(e^{-Const.})\approx 0.8724955346952092$.
 
