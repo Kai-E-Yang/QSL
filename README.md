@@ -113,11 +113,11 @@ The field line integral method is Runge-Kutta 4(5).
 ## Checking Accuracy
 Based on the PFSS dipole field:
 
-$$B_r=\frac{R_{\odot}^3}{r^3}(\frac{2R_s^3+r^3}{R_{\odot}^3+2R_s^3})\cos(\theta)$$
+$$B_r=\frac{R_{\odot}^3}{r^3}(\frac{2R_S^3+r^3}{R_{\odot}^3+2R_S^3})\cos(\theta)$$
 
-$$B_{\theta}=\frac{R_{\odot}^3}{r^3}(\frac{R_s^3-r^3}{R_{\odot}^3+2R_s^3})\sin(\theta)$$
+$$B_{\theta}=\frac{R_{\odot}^3}{r^3}(\frac{R_s^3-r^3}{R_{\odot}^3+2R_S^3})\sin(\theta)$$
 
-With the source surface assumption of $R_s$= 2.5 $R_{\odot}$:
+With the source surface assumption of $R_S$= 2.5 $R_{\odot}$:
 
 $$B_r=\frac{4}{129}(\frac{125}{4r^3}+1)\cos(\theta)$$
 
@@ -132,17 +132,17 @@ since the field components are radius-angle separatable, the equation can be con
 
 $$\frac{125/(8r^2)-r}{125/(4r^3)+1}dr=\frac{\cos(\theta)}{\sin(\theta)}d\theta$$
 
-Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{Rs})/\sin(\theta_{Rcal}))=Const.`$, where $`Const.=\int\frac{125/(8*r^3)-1}{125/(4*r^2)+r}dr`$.
-By using NIntegrate in Mathematica, it is 0.266657, when we start from $R_{cal}=1.01R_{\odot}$ and end at $Rs=2.5R_{\odot}$, where $R_{cal}$ is the spherical surface where we calculate the squashing factor $Q_{\perp}$.
-Then $`\sin(\theta_{Rs})=e^{Const.}\sin(\theta_{Rcal})`$. We can obtain the separatrix layer locates on $R_{cal}$ surface, $\theta_{SL}=\arcsin(e^{-Const.})\approx 0.8724955346952092$.
+Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{R_S})/\sin(\theta_{Rcal}))=Const.`$, where $`Const.=\int\frac{125/(8*r^3)-1}{125/(4*r^2)+r}dr`$.
+By using NIntegrate in Mathematica, it is 0.266657, when we start from $R_{cal}=1.01R_{\odot}$ and end at $R_S=2.5R_{\odot}$, where $R_{cal}$ is the spherical surface where we calculate the squashing factor $Q_{\perp}$.
+Then $`\sin(\theta_{R_S})=e^{Const.}\sin(\theta_{Rcal})`$. We can obtain the separatrix layer locates on $R_{cal}$ surface, $\theta_{SL}=\arcsin(e^{-Const.})\approx 0.8724955346952092$.
 
 By considering the $Q_{\perp}$ defined by Titov 2007 ApJ 660 863, from Eqs. (36)--(41).
-The determinant, $\Delta_{\perp}$, of the map is $|\frac{B_{Rcal}}{B_{Rs}}|$.
+The determinant, $\Delta_{\perp}$, of the map is $|\frac{B_{Rcal}}{B_{R_S}}|$.
 The matrix $G^*_{\perp}$ is
 
 ```math
 R_S^2\begin{bmatrix}
-\sin^2{\theta_{Rs}} & 0\\
+\sin^2{\theta_{R_S}} & 0\\
 0 & 1
 \end{bmatrix}
 ```
@@ -159,7 +159,7 @@ The matrix $D$ is
 ```math
 \begin{bmatrix}
 1 & 0 \\
-0 & e^{Const.}\frac{\cos(\theta_{Rcal})}{\cos(\theta_{Rs})}
+0 & e^{Const.}\frac{\cos(\theta_{Rcal})}{\cos(\theta_{R_S})}
 \end{bmatrix}
 ```
 
