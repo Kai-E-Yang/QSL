@@ -132,13 +132,13 @@ since the field components are radius-angle separatable, the equation can be con
 
 $$\frac{125/(8r^2)-r}{125/(4r^3)+1}dr=\frac{\cos(\theta)}{\sin(\theta)}d\theta$$
 
-Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{R_S})/\sin(\theta_{Rcal}))=Const.`$, where $`Const.=\int\frac{125/(8*r^3)-1}{125/(4*r^2)+r}dr`$.
+Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{R_S})/\sin(\theta_{R_{cal}}))=Const.`$, where $`Const.=\int\frac{125/(8*r^3)-1}{125/(4*r^2)+r}dr`$.
 By using NIntegrate in Mathematica, it is 0.266657, when we start from $R_{cal}=1.01R_{\odot}$ and end at $R_S=2.5R_{\odot}$, where $R_{cal}$ is the spherical surface where we calculate the squashing factor $Q_{\perp}$.
-Then $`\sin(\theta_{R_S})=e^{Const.}\sin(\theta_{Rcal})`$. We can obtain the separatrix layer locates on $R_{cal}$ surface, $\theta_{SL}=\arcsin(e^{-Const.})\approx 0.8724955346952092$.
+Then $`\sin(\theta_{R_S})=e^{Const.}\sin(\theta_{R_{cal}})`$. We can obtain the separatrix layer locates on $R_{cal}$ surface, $\theta_{SL}=\arcsin(e^{-Const.})\approx 0.8724955346952092$.
 
-Here, we only consider the $Q$ induced by the mapping from the calculated surface, $r=Rcal$, to the source surface, $r=R_S$, and the code is modified to calculate this map only, and ignore the map from $Rcal$ to $R_{\odot}$.
+Here, we only consider the $Q$ induced by the mapping from the calculated surface, $r=R_{cal}$, to the source surface, $r=R_S$, and the code is modified to calculate this map only, and ignore the map from $R_{cal}$ to $R_{\odot}$.
 By considering the $Q_{\perp}$ defined by Titov 2007 ApJ 660 863, from Eqs. (36)--(41).
-The determinant, $\Delta_{\perp}$, of the map is $|\frac{B_{Rcal}}{B_{R_S}}|$.
+The determinant, $\Delta_{\perp}$, of the map is $|\frac{B_{R_{cal}}}{B_{R_S}}|$.
 The matrix $G^*_{\perp}$ is
 
 ```math
@@ -151,8 +151,8 @@ R_S^2\begin{bmatrix}
 The matrix $G^{\perp}$ is
 ```math
 R_{cal}^{-2}\begin{bmatrix}
-\sin^{-2}(\theta_{Rcal}) & 0\\
-0 & 1+\frac{B^2_{\theta,Rcal}}{B^2_{r,Rcal}}
+\sin^{-2}(\theta_{R_{cal}}) & 0\\
+0 & 1+\frac{B^2_{\theta,R_{cal}}}{B^2_{r,R_{cal}}}
 \end{bmatrix}
 ```
 
@@ -160,13 +160,13 @@ The matrix $D$ is
 ```math
 \begin{bmatrix}
 1 & 0 \\
-0 & e^{Const.}\frac{\cos(\theta_{Rcal})}{\cos(\theta_{R_S})}
+0 & e^{Const.}\frac{\cos(\theta_{R_{cal}})}{\cos(\theta_{R_S})}
 \end{bmatrix}
 ```
 
 Then the square of the matrix norm $`N_{\perp}^2=tr(D^{\top}G^*_{\perp}DG^{\perp})`$ is
 
-$$N_{\perp}^2=\frac{R_S^2}{R_{cal}^2}e^{2Const.}(1+\frac{\cos^2(\theta_{Rcal})}{1-e^{2Const.}\sin^2(\theta_{Rcal})}(1+\frac{B^2_{\theta,Rcal}}{B^2_{r,Rcal}})) $$
+$$N_{\perp}^2=\frac{R_S^2}{R_{cal}^2}e^{2Const.}(1+\frac{\cos^2(\theta_{R_{cal}})}{1-e^{2Const.}\sin^2(\theta_{R_{cal}})}(1+\frac{B^2_{\theta,R_{cal}}}{B^2_{r,R_{cal}}})) $$
 
 Then $Q_{\perp}=N_{\perp}^2/\Delta_{\perp}$. The results are shown in the following figure:
 <p align="center"><img src="https://raw.githubusercontent.com/Kai-E-Yang/QSL/master/fig/K-QSL_vs_Theory.png" /></p>
