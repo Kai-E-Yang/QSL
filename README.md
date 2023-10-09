@@ -136,6 +136,7 @@ Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{R_S}
 By using NIntegrate in Mathematica, it is 0.266657, when we start from $R_{cal}=1.01R_{\odot}$ and end at $R_S=2.5R_{\odot}$, where $R_{cal}$ is the spherical surface where we calculate the squashing factor $Q_{\perp}$.
 Then $`\sin(\theta_{R_S})=e^{Const.}\sin(\theta_{Rcal})`$. We can obtain the separatrix layer locates on $R_{cal}$ surface, $\theta_{SL}=\arcsin(e^{-Const.})\approx 0.8724955346952092$.
 
+Here, we only consider the $Q$ induced by the mapping from the calculated surface, $r=Rcal$, to the source surface, $r=R_S$, and the code is modified to calculate this map only, and ignore the map from $Rcal$ to $R_{\odot}$.
 By considering the $Q_{\perp}$ defined by Titov 2007 ApJ 660 863, from Eqs. (36)--(41).
 The determinant, $\Delta_{\perp}$, of the map is $|\frac{B_{Rcal}}{B_{R_S}}|$.
 The matrix $G^*_{\perp}$ is
