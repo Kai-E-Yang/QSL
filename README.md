@@ -113,11 +113,11 @@ The field line integral method is Runge-Kutta 4(5).
 ## Checking Accuracy
 Based on the PFSS dipole field:
 
-$$B_r=\frac{R_{\odot}^3}{r^3}(\frac{2Rs^3+r^3}{R_{\odot}^3+2Rs^3}+1)\cos(\theta)$$
+$$B_r=\frac{R_{\odot}^3}{r^3}(\frac{2R_s^3+r^3}{R_{\odot}^3+2R_s^3})\cos(\theta)$$
 
-$$B_{\theta}=\frac{R_{\odot}^3}{r^3}(\frac{Rs^3-r^3}{R_{\odot}^3+2Rs^3})\sin(\theta)$$
+$$B_{\theta}=\frac{R_{\odot}^3}{r^3}(\frac{R_s^3-r^3}{R_{\odot}^3+2R_s^3})\sin(\theta)$$
 
-With the source surface assumption of $Rs$= 2.5 $R_{\odot}$:
+With the source surface assumption of $R_s$= 2.5 $R_{\odot}$:
 
 $$B_r=\frac{4}{129}(\frac{125}{4r^3}+1)\cos(\theta)$$
 
