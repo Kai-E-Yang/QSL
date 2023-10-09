@@ -111,7 +111,13 @@ The field line integral method is Runge-Kutta 4(5).
 
 
 ## Checking Accuracy
-Based on the PFSS dipole field with source surface $Rs$= 2.5 $R_{\odot}$:
+Based on the PFSS dipole field:
+
+$$B_r=\frac{R_{\odot}^3}{r^3}(\frac{2Rs^3+r^3}{R_{\odot}^3+2Rs^3}+1)\cos(\theta)$$
+
+$$B_{\theta}=\frac{R_{\odot}^3}{r^3}(\frac{Rs^3-r^3}{R_{\odot}^3+2Rs^3})\sin(\theta)$$
+
+With the source surface assumption of $Rs$= 2.5 $R_{\odot}$:
 
 $$B_r=\frac{4}{129}(\frac{125}{4r^3}+1)\cos(\theta)$$
 
@@ -119,14 +125,14 @@ $$B_{\theta}=\frac{4}{129r}(\frac{125}{8r^2}-r)\sin(\theta)$$
 
 It is very clear that the $Q_{\perp}$ in the closed field region should be constantly 2, since the field line induced map is symmetric and uniform:
 
-$$(R_{\odot},\theta,\phi)\mapsto(R_{\odot},\pi-\theta,\phi)$$
+$$(R_{cal},\theta,\phi)\mapsto(R_{cal},\pi-\theta,\phi)$$
 
 Let's look at the open field line, $\Phi$ component is zero, the field line equation is: $`\frac{dr}{B_r}=\frac{rd\theta}{B_{\theta}}`$, 
 since the field components are radius-angle separatable, the equation can be convert to:
 
 $$\frac{125/(8r^2)-r}{125/(4r^3)+1}dr=\frac{\cos(\theta)}{\sin(\theta)}d\theta$$
 
-Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{Rs})/\sin(\theta_{R\odot}))=Const.`$, where $`Const.=\int\frac{125/(8*r^3)-1}{125/(4*r^2)+r}dr`$.
+Then the LHS and RHS can be integral separately, lead to $`\ln(\sin(\theta_{Rs})/\sin(\theta_{Rcal}))=Const.`$, where $`Const.=\int\frac{125/(8*r^3)-1}{125/(4*r^2)+r}dr`$.
 By using NIntegrate in Mathematica, it is 0.266657, when we start from $R_{cal}=1.01R_{\odot}$ and end at $Rs=2.5R_{\odot}$, where $R_{cal}$ is the spherical surface where we calculate the squashing factor $Q_{\perp}$.
 Then $`\sin(\theta_{Rs})=e^{Const.}\sin(\theta_{Rcal})`$. We can obtain the separatrix layer locates on $R_{cal}$ surface, $\theta_{SL}=\arcsin(e^{-Const.})\approx 0.8724955346952092$.
 
