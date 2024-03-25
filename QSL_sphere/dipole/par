@@ -1,0 +1,18 @@
+&filename_par
+BfieldName = 'Bfield.binary'
+OutFileName = 'Q_calc_2.binary'
+/
+&cal_par
+nthreads = 4
+dim_ra = 40
+dim_th = 180
+dim_ph = 90
+ra_start = 1.01d0
+th_start = 0.0d0
+ph_start = 0.0d0
+ra_end = 1.01d0
+th_end = 3.14159
+ph_end = 6.28d0
+delta_s = 0.25
+nlevel = 2
+/
