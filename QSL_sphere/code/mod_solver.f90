@@ -22,17 +22,110 @@ contains
     
     mark = 0
     sum0 = 0
-    do k=1,5
-       flag(k) = floor(0.2*k*refine_dim_ph)
-    end do
     
     write(*,'(A)')'| Start the computation !'
     call date_and_time(VALUES=time_begin)
 
+    if (refine_dim_ph.eq.1)then
+      do k=1,5
+         flag(k) = floor(0.2*k*refine_dim_ra)
+      end do
+
 !$omp parallel private(TID, sum0, k)
-!$omp do schedule(dynamic,1)
+!$omp do schedule(static,1)
+
+    do k=1,refine_dim_ra
+       call cal_plane_z(k)
+       TID = OMP_GET_THREAD_NUM()
+       mark(TID) = mark(TID) + 1
+       sum0 = sum(mark)
+
+       if(sum0 .eq. flag(1) .or. sum0 .eq. flag(2) .or. sum0 &
+         & .eq. flag(3) .or. sum0 .eq. flag(4) .or. sum0 .eq.  &
+         & flag(5)) then
+         call date_and_time(VALUES=time_end)
+         time_delta = 1.0d0*(time_end - time_begin)
+         write(*,'(A,f6.1,A,A,g10.4)')'| Calculation progress: '&
+         & ,100.*sum(mark)/(refine_dim_ra*1.0),'%','; costs time (min): '&
+         & ,(time_delta(7)/3600.0 + time_delta(6)/60. &
+         & + time_delta(5) + time_delta(3)*24.0)*60
+       end if
+    
+    end do
+!$omp end do
+!$omp end parallel
+    end if
+
+    if (refine_dim_th .eq. 1) then
+      do k=1,5
+         flag(k) = floor(0.2*k*refine_dim_ra)
+      end do
+
+!$omp parallel private(TID, sum0, k)
+!$omp do schedule(static,1)
+
+    do k=1,refine_dim_ra
+       call cal_plane_y(k)
+       TID = OMP_GET_THREAD_NUM()
+       mark(TID) = mark(TID) + 1
+       sum0 = sum(mark)
+       if(sum0 .eq. flag(1) .or. sum0 .eq. flag(2) .or. sum0 &
+         & .eq. flag(3) .or. sum0 .eq. flag(4) .or. sum0 .eq.  &
+         & flag(5)) then
+         call date_and_time(VALUES=time_end)
+         time_delta = 1.0d0*(time_end - time_begin)
+         write(*,'(A,f6.1,A,A,g10.4)')'| Calculation progress: '&
+         & ,100.*sum(mark)/(refine_dim_ra*1.0),'%','; costs time (min): '&
+         & ,(time_delta(7)/3600.0 + time_delta(6)/60. &
+         & + time_delta(5) + time_delta(3)*24.0)*60
+       end if
+    
+    end do
+!$omp end do
+!$omp end parallel
+    end if
+
+
+    if (refine_dim_ra.eq.1) then
+      do k=1,5
+         flag(k) = floor(0.2*k*refine_dim_ph)
+      end do
+
+!$omp parallel private(TID, sum0, k)
+!$omp do schedule(static,1)
 
     do k=1,refine_dim_ph
+       call cal_plane_x(k)
+       TID = OMP_GET_THREAD_NUM()
+       mark(TID) = mark(TID) + 1
+       sum0 = sum(mark)
+
+       if(sum0 .eq. flag(1) .or. sum0 .eq. flag(2) .or. sum0 &
+         & .eq. flag(3) .or. sum0 .eq. flag(4) .or. sum0 .eq.  &
+         & flag(5)) then
+         call date_and_time(VALUES=time_end)
+         time_delta = 1.0d0*(time_end - time_begin)
+         write(*,'(A,f6.1,A,A,g10.4)')'| Calculation progress: '&
+         & ,100.*sum(mark)/(refine_dim_ph*1.0),'%','; costs time (min): '&
+         & ,(time_delta(7)/3600.0 + time_delta(6)/60. &
+         & + time_delta(5) + time_delta(3)*24.0)*60
+       end if
+    
+    end do
+!$omp end do
+!$omp end parallel
+    end if
+
+
+    if(refine_dim_ra.ne.1 .and. refine_dim_th.ne.1 .and. refine_dim_ph.ne.1) then
+      do k=1,5
+         flag(k) = floor(0.2*k*refine_dim_ra)
+      end do
+      
+!$omp parallel private(TID, sum0, k)
+!$omp do schedule(static,1)
+
+    do k=1,refine_dim_ra
        call cal_plane(k)
        TID = OMP_GET_THREAD_NUM()
        mark(TID) = mark(TID) + 1
@@ -42,8 +135,8 @@ contains
          & flag(5)) then
          call date_and_time(VALUES=time_end)
          time_delta = 1.0d0*(time_end - time_begin)
-         write(*,'(A,f6.1,A,A,f8.2)')'| Calculation progress: '&
-         & ,100.*sum(mark)/(refine_dim_ph*1.0),'%','; costs time (min): '&
+         write(*,'(A,f6.1,A,A,g10.4)')'| Calculation progress: '&
+         & ,100.*sum(mark)/(refine_dim_ra*1.0),'%','; costs time (min): '&
          & ,(time_delta(7)/3600.0 + time_delta(6)/60. &
          & + time_delta(5) + time_delta(3)*24.0)*60
        end if
@@ -51,6 +144,7 @@ contains
     end do
 !$omp end do
 !$omp end parallel
+    end if
     
     call date_and_time(VALUES=time_end)
     write(*,'(A)')'| Computation finished !'
@@ -65,12 +159,12 @@ contains
     real(kind=r8) :: th_i,ph_i,r_i
     real(kind=r8) :: x_i,y_i,z_i
     
-    ph_i = refine_ph(k)
+    r_i = refine_ra(k)
 
-    do j=1,refine_dim_th
-       do i=1,refine_dim_ra
-          th_i = refine_th(j)
-          r_i  = refine_ra(i)
+    do j=1,refine_dim_ph
+       do i=1,refine_dim_th
+          ph_i=refine_ph(j)
+          th_i=refine_th(i)
     
           x_i = r_i*sin(th_i)*cos(ph_i)
           y_i = r_i*sin(th_i)*sin(ph_i)
@@ -85,6 +179,92 @@ contains
     cal_data(:,:,k,2) = length_slice
     cal_data(:,:,k,3) = end_slice
   end subroutine cal_plane
+
+  subroutine cal_plane_x(k)
+    integer,intent(in)::k
+    integer::i,j
+    real(kind=r8) :: q_slice(refine_dim_th)
+    real(kind=r8) :: end_slice(refine_dim_th)
+    real(kind=r8) :: length_slice(refine_dim_th)
+    real(kind=r8) :: th_i,ph_i,r_i
+    real(kind=r8) :: x_i,y_i,z_i
+
+    
+    r_i = ra_start
+    ph_i = refine_ph(k)
+
+    do j=1,refine_dim_th
+        th_i=refine_th(j)
+
+        x_i = r_i*sin(th_i)*cos(ph_i)
+        y_i = r_i*sin(th_i)*sin(ph_i)
+        z_i = r_i*cos(th_i)
+ 
+        call cal_point(x_i,y_i,z_i,q_slice(j),&
+              &end_slice(j),length_slice(j))
+    end do
+
+    cal_data(1,:,k,1) = q_slice
+    cal_data(1,:,k,2) = length_slice
+    cal_data(1,:,k,3) = end_slice
+  end subroutine cal_plane_x
+
+  subroutine cal_plane_y(k)
+    integer,intent(in)::k
+    integer::i,j
+    real(kind=r8) :: q_slice(refine_dim_ph)
+    real(kind=r8) :: end_slice(refine_dim_ph)
+    real(kind=r8) :: length_slice(refine_dim_ph)
+    real(kind=r8) :: th_i,ph_i,r_i
+    real(kind=r8) :: x_i,y_i,z_i
+    
+    r_i = refine_ra(k)
+    th_i = ra_start
+
+    do j=1,refine_dim_ph
+        ph_i=refine_ph(j)
+    
+        x_i = r_i*sin(th_i)*cos(ph_i)
+        y_i = r_i*sin(th_i)*sin(ph_i)
+        z_i = r_i*cos(th_i)
+ 
+        call cal_point(x_i,y_i,z_i,q_slice(j),&
+              &end_slice(j),length_slice(j))
+    end do
+
+    cal_data(k,1,:,1) = q_slice
+    cal_data(k,1,:,2) = length_slice
+    cal_data(k,1,:,3) = end_slice
+  end subroutine cal_plane_y
+
+  subroutine cal_plane_z(k)
+    integer,intent(in)::k
+    integer::i,j
+    real(kind=r8) :: q_slice(refine_dim_th)
+    real(kind=r8) :: end_slice(refine_dim_th)
+    real(kind=r8) :: length_slice(refine_dim_th)
+    real(kind=r8) :: th_i,ph_i,r_i
+    real(kind=r8) :: x_i,y_i,z_i
+
+    r_i = refine_ra(k)
+    ph_i = ph_start
+
+    do j=1,refine_dim_th
+        th_i=refine_th(j)
+
+        x_i = r_i*sin(th_i)*cos(ph_i)
+        y_i = r_i*sin(th_i)*sin(ph_i)
+        z_i = r_i*cos(th_i)
+ 
+        call cal_point(x_i,y_i,z_i,q_slice(j),&
+              &end_slice(j),length_slice(j))
+    end do
+
+    cal_data(k,:,1,1) = q_slice
+    cal_data(k,:,1,2) = length_slice
+    cal_data(k,:,1,3) = end_slice
+  end subroutine cal_plane_z
+
 ! ------ do calculation at each point ------
   subroutine cal_point(PosiX,PosiY,PosiZ,SquashingQ,end_mark,length)
     ! here the input position is calculated under the Cartesian coordinate system
@@ -192,12 +372,13 @@ contains
     real(kind=r8)::LineF(13)
     real(kind=r8)::LineB(13)
     real(kind=r8)::sig,lengthF,lengthB,length
-    sig = real(1,kind=r8)
+    sig = 1.0_r8
 
     call integralLine(LineP,LineF,sig,lengthF)
 
-    sig = real(-1,kind=r8)
+    sig = -1.0_r8
     call integralLine(LineP,LineB,sig,lengthB)
+
     call diffLine(LineP(1:3),LineP(10:13))
     length = abs(lengthB) + abs(lengthF)
   end subroutine fieldline
@@ -211,21 +392,27 @@ contains
     real(kind=r8)::tmp(9)
     real(kind=r8)::dtmp(4)
     real(kind=r8)::s_start,s_end,ds
+    integer :: nidx(3)
     
-    s_start = real(0,kind=r8)
-    s_end = real(0,kind=r8)
+    s_start = 0.0_r8
+    s_end = 0.0_r8
     
     tmp = LineP(1:9)
-    ds = real(delta_s,kind=r8)*sig
     n_step = 0
     flag = 1
-    
+    ! ds = delta_s*sig
+    call obtain_ds(tmp,ds)
+
+    ds = ds*delta_s*sig
+
     do while (n_step .le. isn .and. flag .eq. 1)
        s_end = s_start + ds
-       call rk4(rhs,neqn,s_start,s_end,tmp,flag)
-
+       call rk4(rhs,neqn,s_start,s_end,tmp,flag,nidx)
+       call obtain_ds_n(nidx,ds)
+       ds = ds*delta_s*sig
        s_start = s_end
        n_step  = n_step+1
+
     end do
     
     LineI(1:9) = tmp

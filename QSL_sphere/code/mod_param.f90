@@ -12,7 +12,7 @@ implicit none
 
   integer :: dim_th,dim_ph,dim_ra
   integer :: refine_dim_th,refine_dim_ph,refine_dim_ra
-  logical :: outputvtk
+  logical :: outputvtk,include_pole,periodic_phi,uniform_ra,uniform_th,uniform_ph
 
   real(kind=r8) :: th_start,ph_start,ra_start
   real(kind=r8) :: th_end,ph_end,ra_end
@@ -29,6 +29,12 @@ implicit none
   real(kind=r8),dimension(:,:,:),allocatable :: Bx,By,Bz
   real(kind=r8),dimension(:,:,:,:),allocatable :: cal_data
 
+  real(kind = r8)::dx(3),dy(3),dz(3),dxyz_vec(7,3)
+  real(kind = r8)::dxyz
+  
+  ! real(kind=r8),dimension(:,:,:,:),allocatable :: dBxyz
+
+
   real(kind=r8),dimension(:),allocatable :: th,ph,ra
   real(kind=r8),dimension(:),allocatable :: refine_th
   real(kind=r8),dimension(:),allocatable :: refine_ph
@@ -36,10 +42,10 @@ implicit none
 
   real(kind=r8) :: delta_s
   real(kind=r8) :: BoundaryEps
-  real(kind=r8) :: eps_B
+  real(kind=r8) :: eps_B, eps_N
 
   namelist /filename_par/ BfieldName, OutFileName, indataformat, outputvtk
   namelist /cal_par/ nthreads,dim_ra,dim_th,dim_ph,th_start,ph_start, &
-    ra_start,ph_end,ra_end,th_end,nlevel,delta_s
+    ra_start,ph_end,ra_end,th_end,nlevel,delta_s,include_pole,uniform_ra,uniform_th,uniform_ph
     
 end module mod_param

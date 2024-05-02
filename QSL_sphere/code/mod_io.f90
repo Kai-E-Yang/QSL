@@ -11,10 +11,10 @@ contains
     indataformat = 'binary'
     outputvtk    = .false.
 
-    nthreads    = 1
-    dim_th        = 100
-    dim_ph        = 100
-    dim_ra        = 100
+    nthreads     = 1
+    dim_th       = 100
+    dim_ph       = 100
+    dim_ra       = 100
     
     th_start     = 100
     ph_start     = 100
@@ -24,8 +24,12 @@ contains
     ph_end       = 100
     ra_end       = 100
     
-    nlevel      = 1
-    delta_s     = 0.1d0
+    nlevel       = 1
+    delta_s      = 0.1d0
+    include_pole = .true.
+    uniform_ra   = .true.
+    uniform_th   = .true.
+    uniform_ph   = .true.
     ! read parameters   
     write(*,'(A)')'| = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ='   
     write(*,'(A)')'| Reading parameters from file: '//trim(par)
@@ -45,7 +49,9 @@ contains
     allocate(Bx(0:dim_ra+1,0:dim_th+1,0:dim_ph+1))
     allocate(By(0:dim_ra+1,0:dim_th+1,0:dim_ph+1))
     allocate(Bz(0:dim_ra+1,0:dim_th+1,0:dim_ph+1))
-    
+
+    ! allocate(dBxyz(0:dim_ra+1,0:dim_th+1,0:dim_ph+1,9))
+
     allocate(th(0:dim_th+1))
     allocate(ph(0:dim_ph+1))
     allocate(ra(0:dim_ra+1))
@@ -87,10 +93,31 @@ contains
               & / (refine_dim_ra-1)
     end if
 
-    delta_s = ra(1)*d_th*real(delta_s,kind=r8)
-    BoundaryEps = real(1,kind=r8)+1e-2*delta_s
+    ! delta_s = ra(1)*d_th*real(delta_s,kind=r8)
+    BoundaryEps = real(1,kind=r8)+1e-2*ra(1)*(th(2)-th(1))*real(delta_s,kind=r8)
     iterMax = 20
     eps_B = epsilon(real(1,kind=r8))
+    eps_N = epsilon(real(1,kind=r8))
+
+    dxyz = real(0.0001,kind=r8)*BoundaryEps
+    
+    dx = real(0,kind=r8)*(/1,1,1/)
+    dy = real(0,kind=r8)*(/1,1,1/)
+    dz = real(0,kind=r8)*(/1,1,1/)
+    
+    dx(1) = dxyz
+    dy(2) = dxyz
+    dz(3) = dxyz
+
+    dxyz_vec(1,:)=(/0.0_r8,0.0_r8,0.0_r8/)
+    dxyz_vec(2,:)=(/dxyz,0.0_r8,0.0_r8/)
+    dxyz_vec(3,:)=(/-dxyz,0.0_r8,0.0_r8/)
+
+    dxyz_vec(4,:)=(/0.0_r8,dxyz,0.0_r8/)
+    dxyz_vec(5,:)=(/0.0_r8,-dxyz,0.0_r8/)
+
+    dxyz_vec(6,:)=(/0.0_r8,0.0_r8,dxyz/)
+    dxyz_vec(7,:)=(/0.0_r8,0.0_r8,-dxyz/)
 
   end subroutine post_allocate
 
@@ -98,6 +125,7 @@ contains
     implicit none  
     deallocate(Bth,Bph,Bra)
     deallocate(Bx,By,Bz)
+    ! deallocate(dBxyz)
     deallocate(th,ph,ra)
     deallocate(refine_ra)
     deallocate(refine_ph)
@@ -126,9 +154,9 @@ contains
     write(*,'(A)')'| '
     write(*,'(A)')'|--------------------------------------------------------'
     write(*,'(A)')'| The NDIM of the Magnetic data is: '
-    write(*,'(A,I3)')'|                  ra dimension: ',dim_ra
-    write(*,'(A,I3)')'|                  th dimension: ',dim_th
-    write(*,'(A,I3)')'|                  ph dimension: ',dim_ph
+    write(*,'(A,I3,g10.4,g10.4)')'|                  ra dimension: ',dim_ra,min_ra,max_ra
+    write(*,'(A,I3,g10.4,g10.4)')'|                  th dimension: ',dim_th,min_th,max_th
+    write(*,'(A,I3,g10.4,g10.4)')'|                  ph dimension: ',dim_ph,min_ph,max_ph
     write(*,'(A)')'| '
     write(*,'(A)')'| The calculated domain is: '
     write(*,'(A,g10.4,A,g10.4)')'|             ra ',ra_start,' to ',ra_end
@@ -225,15 +253,26 @@ contains
     Bth(1:dim_ra,dim_th+1,1:dim_ph) = Bth(1:dim_ra,dim_th,1:dim_ph)
     Bph(1:dim_ra,dim_th+1,1:dim_ph) = Bph(1:dim_ra,dim_th,1:dim_ph)
     Bra(1:dim_ra,dim_th+1,1:dim_ph) = Bra(1:dim_ra,dim_th,1:dim_ph)
-      
-    Bth(1:dim_ra,1:dim_th,0) = Bth(1:dim_ra,1:dim_th,1)
-    Bph(1:dim_ra,1:dim_th,0) = Bph(1:dim_ra,1:dim_th,1)
-    Bra(1:dim_ra,1:dim_th,0) = Bra(1:dim_ra,1:dim_th,1)
-      
-    Bth(1:dim_ra,1:dim_th,dim_ph+1) = Bth(1:dim_ra,1:dim_th,dim_ph)
-    Bph(1:dim_ra,1:dim_th,dim_ph+1) = Bph(1:dim_ra,1:dim_th,dim_ph)
-    Bra(1:dim_ra,1:dim_th,dim_ph+1) = Bra(1:dim_ra,1:dim_th,dim_ph)
     
+
+    if (periodic_phi) then
+      Bth(1:dim_ra,1:dim_th,0) = Bth(1:dim_ra,1:dim_th,dim_ph)
+      Bph(1:dim_ra,1:dim_th,0) = Bph(1:dim_ra,1:dim_th,dim_ph)
+      Bra(1:dim_ra,1:dim_th,0) = Bra(1:dim_ra,1:dim_th,dim_ph)
+
+      Bth(1:dim_ra,1:dim_th,dim_ph+1) = Bth(1:dim_ra,1:dim_th,1)
+      Bph(1:dim_ra,1:dim_th,dim_ph+1) = Bph(1:dim_ra,1:dim_th,1)
+      Bra(1:dim_ra,1:dim_th,dim_ph+1) = Bra(1:dim_ra,1:dim_th,1)
+    else  
+      Bth(1:dim_ra,1:dim_th,0) = Bth(1:dim_ra,1:dim_th,1)
+      Bph(1:dim_ra,1:dim_th,0) = Bph(1:dim_ra,1:dim_th,1)
+      Bra(1:dim_ra,1:dim_th,0) = Bra(1:dim_ra,1:dim_th,1)
+
+      Bth(1:dim_ra,1:dim_th,dim_ph+1) = Bth(1:dim_ra,1:dim_th,dim_ph)
+      Bph(1:dim_ra,1:dim_th,dim_ph+1) = Bph(1:dim_ra,1:dim_th,dim_ph)
+      Bra(1:dim_ra,1:dim_th,dim_ph+1) = Bra(1:dim_ra,1:dim_th,dim_ph)
+    end if
+      
     ! lines in ghost shell
     Bth(0,0,1:dim_ph) = Bth(1,1,1:dim_ph)
     Bph(0,0,1:dim_ph) = Bph(1,1,1:dim_ph)
@@ -251,79 +290,158 @@ contains
     Bph(dim_ra+1,dim_th+1,1:dim_ph) = Bph(dim_ra,dim_th,1:dim_ph)
     Bra(dim_ra+1,dim_th+1,1:dim_ph) = Bra(dim_ra,dim_th,1:dim_ph)
     ! - - - - - - - - - - - - - - - - - - - - - - - 
-    Bth(1:dim_ra,0,0) = Bth(1:dim_ra,1,1)
-    Bph(1:dim_ra,0,0) = Bph(1:dim_ra,1,1)
-    Bra(1:dim_ra,0,0) = Bra(1:dim_ra,1,1)
-      
-    Bth(1:dim_ra,dim_th+1,0) = Bth(1:dim_ra,dim_th,1)
-    Bph(1:dim_ra,dim_th+1,0) = Bph(1:dim_ra,dim_th,1)
-    Bra(1:dim_ra,dim_th+1,0) = Bra(1:dim_ra,dim_th,1)
-      
-    Bth(1:dim_ra,dim_th+1,dim_ph+1) = Bth(1:dim_ra,dim_th,dim_ph)
-    Bph(1:dim_ra,dim_th+1,dim_ph+1) = Bph(1:dim_ra,dim_th,dim_ph)
-    Bra(1:dim_ra,dim_th+1,dim_ph+1) = Bra(1:dim_ra,dim_th,dim_ph)
-      
-    Bth(1:dim_ra,0,dim_ph+1) = Bth(1:dim_ra,1,dim_ph)
-    Bph(1:dim_ra,0,dim_ph+1) = Bph(1:dim_ra,1,dim_ph)
-    Bra(1:dim_ra,0,dim_ph+1) = Bra(1:dim_ra,1,dim_ph)
-    ! - - - - - - - - - - - - - - - - - - - - - - - 
-    Bth(0,1:dim_th,0) = Bth(1,1:dim_th,1)
-    Bph(0,1:dim_th,0) = Bph(1,1:dim_th,1)
-    Bra(0,1:dim_th,0) = Bra(1,1:dim_th,1)
-      
-    Bth(dim_ra+1,1:dim_th,0) = Bth(dim_ra,1:dim_th,1)
-    Bph(dim_ra+1,1:dim_th,0) = Bph(dim_ra,1:dim_th,1)
-    Bra(dim_ra+1,1:dim_th,0) = Bra(dim_ra,1:dim_th,1)
-      
-    Bth(0,1:dim_th,dim_ph+1) = Bth(1,1:dim_th,dim_ph)
-    Bph(0,1:dim_th,dim_ph+1) = Bph(1,1:dim_th,dim_ph)
-    Bra(0,1:dim_th,dim_ph+1) = Bra(1,1:dim_th,dim_ph)
-      
-    Bth(dim_ra+1,1:dim_th,dim_ph+1) = Bth(dim_ra,1:dim_th,dim_ph)
-    Bph(dim_ra+1,1:dim_th,dim_ph+1) = Bph(dim_ra,1:dim_th,dim_ph)
-    Bra(dim_ra+1,1:dim_th,dim_ph+1) = Bra(dim_ra,1:dim_th,dim_ph)
-    
-    ! - - - - - - - - - - - - - - - - - - - - - - - 
-    ! points in ghost shell
-    Bth(0,0,0) = Bth(1,1,1)
-    Bph(0,0,0) = Bph(1,1,1)
-    Bra(0,0,0) = Bra(1,1,1)
-      
-    Bth(dim_ra+1,0,0) = Bth(dim_ra,1,1)
-    Bph(dim_ra+1,0,0) = Bph(dim_ra,1,1)
-    Bra(dim_ra+1,0,0) = Bra(dim_ra,1,1)
-      
-    Bth(0,dim_th+1,0) = Bth(1,dim_th,1)
-    Bph(0,dim_th+1,0) = Bph(1,dim_th,1)
-    Bra(0,dim_th+1,0) = Bra(1,dim_th,1)
-      
-    Bth(0,0,dim_ph+1) = Bth(1,1,dim_ph)
-    Bph(0,0,dim_ph+1) = Bph(1,1,dim_ph)
-    Bra(0,0,dim_ph+1) = Bra(1,1,dim_ph)
-      
-    Bth(dim_ra+1,dim_th+1,0) = Bth(dim_ra,dim_th,1)
-    Bph(dim_ra+1,dim_th+1,0) = Bph(dim_ra,dim_th,1)
-    Bra(dim_ra+1,dim_th+1,0) = Bra(dim_ra,dim_th,1)
-      
-    Bth(dim_ra+1,0,dim_ph+1) = Bth(dim_ra,1,dim_ph)
-    Bph(dim_ra+1,0,dim_ph+1) = Bph(dim_ra,1,dim_ph)
-    Bra(dim_ra+1,0,dim_ph+1) = Bra(dim_ra,1,dim_ph)
-      
-    Bth(0,dim_th+1,dim_ph+1) = Bth(1,dim_th,dim_ph)
-    Bph(0,dim_th+1,dim_ph+1) = Bph(1,dim_th,dim_ph)
-    Bra(0,dim_th+1,dim_ph+1) = Bra(1,dim_th,dim_ph)
-      
-    Bth(dim_ra+1,dim_th+1,dim_ph+1) = Bth(dim_ra,dim_th,dim_ph)
-    Bph(dim_ra+1,dim_th+1,dim_ph+1) = Bph(dim_ra,dim_th,dim_ph)
-    Bra(dim_ra+1,dim_th+1,dim_ph+1) = Bra(dim_ra,dim_th,dim_ph)
+    if (periodic_phi) then
+      Bth(1:dim_ra,0,0) = Bth(1:dim_ra,1,dim_ph)
+      Bph(1:dim_ra,0,0) = Bph(1:dim_ra,1,dim_ph)
+      Bra(1:dim_ra,0,0) = Bra(1:dim_ra,1,dim_ph)
+        
+      Bth(1:dim_ra,dim_th+1,0) = Bth(1:dim_ra,dim_th,dim_ph)
+      Bph(1:dim_ra,dim_th+1,0) = Bph(1:dim_ra,dim_th,dim_ph)
+      Bra(1:dim_ra,dim_th+1,0) = Bra(1:dim_ra,dim_th,dim_ph)
+        
+      Bth(1:dim_ra,dim_th+1,dim_ph+1) = Bth(1:dim_ra,dim_th,1)
+      Bph(1:dim_ra,dim_th+1,dim_ph+1) = Bph(1:dim_ra,dim_th,1)
+      Bra(1:dim_ra,dim_th+1,dim_ph+1) = Bra(1:dim_ra,dim_th,1)
+        
+      Bth(1:dim_ra,0,dim_ph+1) = Bth(1:dim_ra,1,1)
+      Bph(1:dim_ra,0,dim_ph+1) = Bph(1:dim_ra,1,1)
+      Bra(1:dim_ra,0,dim_ph+1) = Bra(1:dim_ra,1,1)
+    else
 
-    ra(0)            = ra(1) 
-    th(0)             = th(1)
-    ph(0)               = ph(1)
-    ra(dim_ra+1) = ra(dim_ra)
-    th(dim_th+1)   = th(dim_th)
-    ph(dim_ph+1)       = ph(dim_ph)
+      Bth(1:dim_ra,0,0) = Bth(1:dim_ra,1,1)
+      Bph(1:dim_ra,0,0) = Bph(1:dim_ra,1,1)
+      Bra(1:dim_ra,0,0) = Bra(1:dim_ra,1,1)
+        
+      Bth(1:dim_ra,dim_th+1,0) = Bth(1:dim_ra,dim_th,1)
+      Bph(1:dim_ra,dim_th+1,0) = Bph(1:dim_ra,dim_th,1)
+      Bra(1:dim_ra,dim_th+1,0) = Bra(1:dim_ra,dim_th,1)
+        
+      Bth(1:dim_ra,dim_th+1,dim_ph+1) = Bth(1:dim_ra,dim_th,dim_ph)
+      Bph(1:dim_ra,dim_th+1,dim_ph+1) = Bph(1:dim_ra,dim_th,dim_ph)
+      Bra(1:dim_ra,dim_th+1,dim_ph+1) = Bra(1:dim_ra,dim_th,dim_ph)
+        
+      Bth(1:dim_ra,0,dim_ph+1) = Bth(1:dim_ra,1,dim_ph)
+      Bph(1:dim_ra,0,dim_ph+1) = Bph(1:dim_ra,1,dim_ph)
+      Bra(1:dim_ra,0,dim_ph+1) = Bra(1:dim_ra,1,dim_ph)
+    end if
+    ! - - - - - - - - - - - - - - - - - - - - - - - 
+    if (periodic_phi) then
+      Bth(0,1:dim_th,0) = Bth(1,1:dim_th,dim_ph)
+      Bph(0,1:dim_th,0) = Bph(1,1:dim_th,dim_ph)
+      Bra(0,1:dim_th,0) = Bra(1,1:dim_th,dim_ph)
+        
+      Bth(dim_ra+1,1:dim_th,0) = Bth(dim_ra,1:dim_th,dim_ph)
+      Bph(dim_ra+1,1:dim_th,0) = Bph(dim_ra,1:dim_th,dim_ph)
+      Bra(dim_ra+1,1:dim_th,0) = Bra(dim_ra,1:dim_th,dim_ph)
+        
+      Bth(0,1:dim_th,dim_ph+1) = Bth(1,1:dim_th,1)
+      Bph(0,1:dim_th,dim_ph+1) = Bph(1,1:dim_th,1)
+      Bra(0,1:dim_th,dim_ph+1) = Bra(1,1:dim_th,1)
+        
+      Bth(dim_ra+1,1:dim_th,dim_ph+1) = Bth(dim_ra,1:dim_th,1)
+      Bph(dim_ra+1,1:dim_th,dim_ph+1) = Bph(dim_ra,1:dim_th,1)
+      Bra(dim_ra+1,1:dim_th,dim_ph+1) = Bra(dim_ra,1:dim_th,1)
+    else
+      Bth(0,1:dim_th,0) = Bth(1,1:dim_th,1)
+      Bph(0,1:dim_th,0) = Bph(1,1:dim_th,1)
+      Bra(0,1:dim_th,0) = Bra(1,1:dim_th,1)
+        
+      Bth(dim_ra+1,1:dim_th,0) = Bth(dim_ra,1:dim_th,1)
+      Bph(dim_ra+1,1:dim_th,0) = Bph(dim_ra,1:dim_th,1)
+      Bra(dim_ra+1,1:dim_th,0) = Bra(dim_ra,1:dim_th,1)
+        
+      Bth(0,1:dim_th,dim_ph+1) = Bth(1,1:dim_th,dim_ph)
+      Bph(0,1:dim_th,dim_ph+1) = Bph(1,1:dim_th,dim_ph)
+      Bra(0,1:dim_th,dim_ph+1) = Bra(1,1:dim_th,dim_ph)
+        
+      Bth(dim_ra+1,1:dim_th,dim_ph+1) = Bth(dim_ra,1:dim_th,dim_ph)
+      Bph(dim_ra+1,1:dim_th,dim_ph+1) = Bph(dim_ra,1:dim_th,dim_ph)
+      Bra(dim_ra+1,1:dim_th,dim_ph+1) = Bra(dim_ra,1:dim_th,dim_ph)
+    end if
     
+    ! - - - - - - - - - - - - - - - - - - - - - - - 
+    if (periodic_phi) then
+      ! points in ghost shell
+      Bth(0,0,0) = Bth(1,1,dim_ph)
+      Bph(0,0,0) = Bph(1,1,dim_ph)
+      Bra(0,0,0) = Bra(1,1,dim_ph)
+        
+      Bth(dim_ra+1,0,0) = Bth(dim_ra,1,dim_ph)
+      Bph(dim_ra+1,0,0) = Bph(dim_ra,1,dim_ph)
+      Bra(dim_ra+1,0,0) = Bra(dim_ra,1,dim_ph)
+        
+      Bth(0,dim_th+1,0) = Bth(1,dim_th,dim_ph)
+      Bph(0,dim_th+1,0) = Bph(1,dim_th,dim_ph)
+      Bra(0,dim_th+1,0) = Bra(1,dim_th,dim_ph)
+        
+      Bth(0,0,dim_ph+1) = Bth(1,1,1)
+      Bph(0,0,dim_ph+1) = Bph(1,1,1)
+      Bra(0,0,dim_ph+1) = Bra(1,1,1)
+        
+      Bth(dim_ra+1,dim_th+1,0) = Bth(dim_ra,dim_th,dim_ph)
+      Bph(dim_ra+1,dim_th+1,0) = Bph(dim_ra,dim_th,dim_ph)
+      Bra(dim_ra+1,dim_th+1,0) = Bra(dim_ra,dim_th,dim_ph)
+        
+      Bth(dim_ra+1,0,dim_ph+1) = Bth(dim_ra,1,1)
+      Bph(dim_ra+1,0,dim_ph+1) = Bph(dim_ra,1,1)
+      Bra(dim_ra+1,0,dim_ph+1) = Bra(dim_ra,1,1)
+        
+      Bth(0,dim_th+1,dim_ph+1) = Bth(1,dim_th,1)
+      Bph(0,dim_th+1,dim_ph+1) = Bph(1,dim_th,1)
+      Bra(0,dim_th+1,dim_ph+1) = Bra(1,dim_th,1)
+        
+      Bth(dim_ra+1,dim_th+1,dim_ph+1) = Bth(dim_ra,dim_th,1)
+      Bph(dim_ra+1,dim_th+1,dim_ph+1) = Bph(dim_ra,dim_th,1)
+      Bra(dim_ra+1,dim_th+1,dim_ph+1) = Bra(dim_ra,dim_th,1)
+    else
+      ! points in ghost shell
+      Bth(0,0,0) = Bth(1,1,1)
+      Bph(0,0,0) = Bph(1,1,1)
+      Bra(0,0,0) = Bra(1,1,1)
+        
+      Bth(dim_ra+1,0,0) = Bth(dim_ra,1,1)
+      Bph(dim_ra+1,0,0) = Bph(dim_ra,1,1)
+      Bra(dim_ra+1,0,0) = Bra(dim_ra,1,1)
+        
+      Bth(0,dim_th+1,0) = Bth(1,dim_th,1)
+      Bph(0,dim_th+1,0) = Bph(1,dim_th,1)
+      Bra(0,dim_th+1,0) = Bra(1,dim_th,1)
+        
+      Bth(0,0,dim_ph+1) = Bth(1,1,dim_ph)
+      Bph(0,0,dim_ph+1) = Bph(1,1,dim_ph)
+      Bra(0,0,dim_ph+1) = Bra(1,1,dim_ph)
+        
+      Bth(dim_ra+1,dim_th+1,0) = Bth(dim_ra,dim_th,1)
+      Bph(dim_ra+1,dim_th+1,0) = Bph(dim_ra,dim_th,1)
+      Bra(dim_ra+1,dim_th+1,0) = Bra(dim_ra,dim_th,1)
+        
+      Bth(dim_ra+1,0,dim_ph+1) = Bth(dim_ra,1,dim_ph)
+      Bph(dim_ra+1,0,dim_ph+1) = Bph(dim_ra,1,dim_ph)
+      Bra(dim_ra+1,0,dim_ph+1) = Bra(dim_ra,1,dim_ph)
+        
+      Bth(0,dim_th+1,dim_ph+1) = Bth(1,dim_th,dim_ph)
+      Bph(0,dim_th+1,dim_ph+1) = Bph(1,dim_th,dim_ph)
+      Bra(0,dim_th+1,dim_ph+1) = Bra(1,dim_th,dim_ph)
+        
+      Bth(dim_ra+1,dim_th+1,dim_ph+1) = Bth(dim_ra,dim_th,dim_ph)
+      Bph(dim_ra+1,dim_th+1,dim_ph+1) = Bph(dim_ra,dim_th,dim_ph)
+      Bra(dim_ra+1,dim_th+1,dim_ph+1) = Bra(dim_ra,dim_th,dim_ph)
+    endif
+
+    ! ra(0)            = ra(1) 
+    ! th(0)             = th(1)
+    ! ph(0)               = ph(1)
+    ! ra(dim_ra+1) = ra(dim_ra)
+    ! th(dim_th+1)   = th(dim_th)
+    ! ph(dim_ph+1)       = ph(dim_ph)
+    
+    ra(0)            = 2*ra(1)-ra(2) 
+    th(0)            = 2*th(1)-th(2)
+    ph(0)            = 2*ph(1)-ph(2)
+    ra(dim_ra+1) = 2*ra(dim_ra)-ra(dim_ra-1)
+    th(dim_th+1) = 2*th(dim_th)-th(dim_th-1)
+    ph(dim_ph+1) = 2*ph(dim_ph)-ph(dim_ph-1)
+
     do k=0,dim_ph+1
     do j=0,dim_th+1
     do i=0,dim_ra+1
@@ -336,20 +454,112 @@ contains
     end do
     end do
 
-    max_th = maxval(th)
-    max_ph = maxval(ph)
-    max_ra = maxval(ra)
+    max_th = maxval(th(1:dim_th))
+    max_ph = maxval(ph(1:dim_ph))
+    max_ra = maxval(ra(1:dim_ra))
 
-    min_th = minval(th)
-    min_ph = minval(ph)
-    min_ra = minval(ra)
+    min_th = minval(th(1:dim_th))
+    min_ph = minval(ph(1:dim_ph))
+    min_ra = minval(ra(1:dim_ra))
 
     d_th  = (max_th - min_th)/real(dim_th - 1, kind=r8)
     d_ph  = (max_ph - min_ph)/real(dim_ph - 1, kind=r8)
     d_ra  = (max_ra - min_ra)/real(dim_ra - 1, kind=r8)
 
+
+    ! call initial_dB()
+
     call post_allocate()
   end subroutine read_data
+
+  ! subroutine initial_dB()
+  !   integer :: i,j,k
+  !   real(kind = r8)::Posi(3),r_i,th_i,ph_i
+  !   real(kind = r8)::dBx_tmp(3),dBy_tmp(3),dBz_tmp(3)
+
+
+  !   do k=1,dim_ph  
+  !     ph_i=ph(k)  
+  !     do j=1,dim_th
+  !       th_i=th(j)
+  !       do i=1,dim_ra
+  !         r_i=ra(i)
+
+  !         Posi(1) = r_i*sin(th_i)*cos(ph_i)
+  !         Posi(2) = r_i*sin(th_i)*sin(ph_i)
+  !         Posi(3)= r_i*cos(th_i)
+  !         call cal_diffB(Posi,dBx_tmp,dBy_tmp,dBz_tmp)
+  !         dBxyz(i,j,k,1:3)=dBx_tmp
+  !         dBxyz(i,j,k,4:6)=dBy_tmp
+  !         dBxyz(i,j,k,7:9)=dBz_tmp
+
+  !       end do
+  !     end do
+  !   end do
+  !   call fill_ghost_layer(dBxyz)
+  ! end subroutine initial_dB
+
+
+  ! subroutine fill_ghost_layer(varIn)
+  !    real(kind = r8)::varIn(0:dim_ra+1,0:dim_th+1,0:dim_ph+1,9)
+  !   ! --------- get the value of B in the ghost cell ------------
+  !   ! surface in ghost shell
+  !   varIn(0,1:dim_th,1:dim_ph,:) = varIn(1,1:dim_th,1:dim_ph,:)
+      
+  !   varIn(dim_ra+1,1:dim_th,1:dim_ph,:) = varIn(dim_ra,1:dim_th,1:dim_ph,:)
+      
+  !   varIn(1:dim_ra,0,1:dim_ph,:) = varIn(1:dim_ra,1,1:dim_ph,:)
+      
+  !   varIn(1:dim_ra,dim_th+1,1:dim_ph,:) = varIn(1:dim_ra,dim_th,1:dim_ph,:)
+      
+  !   varIn(1:dim_ra,1:dim_th,0,:) = varIn(1:dim_ra,1:dim_th,1,:)
+      
+  !   varIn(1:dim_ra,1:dim_th,dim_ph+1,:) = varIn(1:dim_ra,1:dim_th,dim_ph,:)
+    
+  !   ! lines in ghost shell
+  !   varIn(0,0,1:dim_ph,:) = varIn(1,1,1:dim_ph,:)
+      
+  !   varIn(dim_ra+1,0,1:dim_ph,:) = varIn(dim_ra,1,1:dim_ph,:)
+      
+  !   varIn(0,dim_th+1,1:dim_ph,:) = varIn(1,dim_th,1:dim_ph,:)
+      
+  !   varIn(dim_ra+1,dim_th+1,1:dim_ph,:) = varIn(dim_ra,dim_th,1:dim_ph,:)
+  !   ! - - - - - - - - - - - - - - - - - - - - - - - 
+  !   varIn(1:dim_ra,0,0,:) = varIn(1:dim_ra,1,1,:)
+      
+  !   varIn(1:dim_ra,dim_th+1,0,:) = varIn(1:dim_ra,dim_th,1,:)
+      
+  !   varIn(1:dim_ra,dim_th+1,dim_ph+1,:) = varIn(1:dim_ra,dim_th,dim_ph,:)
+      
+  !   varIn(1:dim_ra,0,dim_ph+1,:) = varIn(1:dim_ra,1,dim_ph,:)
+  !   ! - - - - - - - - - - - - - - - - - - - - - - - 
+  !   varIn(0,1:dim_th,0,:) = varIn(1,1:dim_th,1,:)
+      
+  !   varIn(dim_ra+1,1:dim_th,0,:) = varIn(dim_ra,1:dim_th,1,:)
+      
+  !   varIn(0,1:dim_th,dim_ph+1,:) = varIn(1,1:dim_th,dim_ph,:)
+      
+  !   varIn(dim_ra+1,1:dim_th,dim_ph+1,:) = varIn(dim_ra,1:dim_th,dim_ph,:)
+    
+  !   ! - - - - - - - - - - - - - - - - - - - - - - - 
+  !   ! points in ghost shell
+  !   varIn(0,0,0,:) = varIn(1,1,1,:)
+      
+  !   varIn(dim_ra+1,0,0,:) = varIn(dim_ra,1,1,:)
+      
+  !   varIn(0,dim_th+1,0,:) = varIn(1,dim_th,1,:)
+      
+  !   varIn(0,0,dim_ph+1,:) = varIn(1,1,dim_ph,:)
+      
+  !   varIn(dim_ra+1,dim_th+1,0,:) = varIn(dim_ra,dim_th,1,:)
+      
+  !   varIn(dim_ra+1,0,dim_ph+1,:) = varIn(dim_ra,1,dim_ph,:)
+      
+  !   varIn(0,dim_th+1,dim_ph+1,:) = varIn(1,dim_th,dim_ph,:)
+      
+  !   varIn(dim_ra+1,dim_th+1,dim_ph+1,:) = varIn(dim_ra,dim_th,dim_ph,:)
+
+  ! end subroutine fill_ghost_layer
 
   subroutine write_data()
     write(*,'(A)')'| Writing the result ...'
