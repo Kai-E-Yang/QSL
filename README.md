@@ -43,6 +43,8 @@ For the latest version, the method is that proposed in Scott (2017, ApJ) and Tas
 
 - Chloe Wilkins 2023@newcastle fixed bugs in the test field generation.
 
+- v9.5 K.Y. May/2024@IFA. Optimize the QSL_sphere code, the code runs 10-30 times faster than old version.
+
 ## How to use it
 1, compile the program by using the makefile
 ```
