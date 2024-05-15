@@ -153,9 +153,9 @@ contains
   subroutine cal_plane(k)
     integer,intent(in)::k
     integer::i,j
-    real(kind=r8) :: q_slice(refine_dim_ra,refine_dim_th)
-    real(kind=r8) :: end_slice(refine_dim_ra,refine_dim_th)
-    real(kind=r8) :: length_slice(refine_dim_ra,refine_dim_th)
+    real(kind=r8) :: q_slice(refine_dim_ph,refine_dim_th)
+    real(kind=r8) :: end_slice(refine_dim_ph,refine_dim_th)
+    real(kind=r8) :: length_slice(refine_dim_ph,refine_dim_th)
     real(kind=r8) :: th_i,ph_i,r_i
     real(kind=r8) :: x_i,y_i,z_i
     

@@ -34,7 +34,6 @@ implicit none
   
   ! real(kind=r8),dimension(:,:,:,:),allocatable :: dBxyz
 
-
   real(kind=r8),dimension(:),allocatable :: th,ph,ra
   real(kind=r8),dimension(:),allocatable :: refine_th
   real(kind=r8),dimension(:),allocatable :: refine_ph
