@@ -94,7 +94,7 @@ contains
     end if
 
     ! delta_s = ra(1)*d_th*real(delta_s,kind=r8)
-    BoundaryEps = real(1,kind=r8)+1e-2*ra(1)*(th(2)-th(1))*real(delta_s,kind=r8)
+    BoundaryEps = real(min_ra,kind=r8)+1e-2*ra(1)*(th(2)-th(1))*real(delta_s,kind=r8)
     iterMax = 20
     eps_B = epsilon(real(1,kind=r8))
     eps_N = epsilon(real(1,kind=r8))
