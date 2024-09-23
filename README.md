@@ -1,6 +1,8 @@
 # K-QSL
 A package to calculate squashing degree Q in both Cartesian and spherical coordinates
 
+Now the code can be cited by DOI: 10.5281/zenodo.13831036
+
 ## What to do
 The file main.f90 is the main program.
 
